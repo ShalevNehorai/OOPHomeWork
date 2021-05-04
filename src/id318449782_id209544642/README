@@ -1,0 +1,12 @@
+# Homework Number 1
+Submit by:
+Ilan Bondarevsky, Id: 318449782
+Shalev Nehorai, Id: 209544642
+
+Special Instructions:
+If a person is not voting, enter -1 when asked who to vote to.
+If a person is qurentined and didn't come with a mask, he will be counted as someone who didn't vote - skip his\her vote automaticly.
+When the elections are over, you need to create new elections to vote again. To create new election press 8 again.
+Every person, ballotbox and political party that you add will be added to the last elections.  
+The new election won't copy the information of the last election, need to add new data.
+The Results choice (9) will show the last elections results.
