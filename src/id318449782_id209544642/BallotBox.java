@@ -2,22 +2,22 @@ package id318449782_id209544642;
 
 import java.util.Arrays;
 
-public class BallotBox {
+public class BallotBox <T extends Citizen>{
 	private static int globalId = 1;
 	private int id;
 
 	private String address;
-	private Citizen[] voters;
+	private Set<T> voters;
 
 	private int[] votes;
 
 	public final static int MIN_TO_VOTE = 18;
 	
-	public BallotBox(String address, int numOfParties, Citizen[] voters) {
+	public BallotBox (String address, int numOfParties, Set<T> voters) {
 		this.id = globalId++;
 		this.address = address;
 		if (voters == null) {
-			this.voters = new Citizen[1];
+			this.voters = new Set<T>();
 		} else {
 			this.voters = voters;
 		}
@@ -46,39 +46,37 @@ public class BallotBox {
 	}
 
 	public int getNumOfCitizens() {
-		for(int i = 0; i < voters.length; i++){
-			if(voters[i] == null){
-				return i;
-			}
-		}
-		return voters.length;
+		return voters.size();
 	}
 
 	public void addParty() {
 		votes = Arrays.copyOf(votes, votes.length + 1);
 	}
 
-	public void addCitizen(Citizen citizen) throws CantVoteException {
-		try{
+	public void addCitizen(T citizen) {
+		/*try{
 			canVote(citizen);
 		}
 		catch(CantVoteException e){
 			throw e;
-		}
-
-		voters = (Citizen[]) Util.addToLast(voters, citizen);
+		}*/
+		
+		voters.add(citizen);// = (Citizen[]) Util.addToLast(voters, citizen);
 	}
 
-	protected void canVote(Citizen citizen) throws CantVoteException {
+	/*protected void canVote(T citizen) throws CantVoteException {
 		if (citizen.isQurentined()) {
 			throw new CantVoteException("The person is qurentined and this ballot box is not for qurentined citizen");
 		} 
 		else if (citizen.getAge() < MIN_TO_VOTE){
 			throw new CantVoteException("The citizen is below valid voting age");
 		}
-	}
+	}*/
 
-	public void vote(int partyPostion) throws CantVoteException {
+	public void vote(T citizen, int partyPostion) throws CantVoteException {
+		if(!voters.contains(citizen))
+			throw new CantVoteException("Citizen cannot vote in this ballot box");
+			
 		if(partyPostion >= 0 && partyPostion < votes.length) {
 			this.votes[partyPostion]++;
 		}
@@ -87,7 +85,7 @@ public class BallotBox {
 		}
 	}
 
-	public double votersPresentage() {
+	public double votersPrecentage() {
 		int voteCount = 0;
 		for (int i = 0; i < votes.length; i++) {
 			voteCount += votes[i];
@@ -109,13 +107,15 @@ public class BallotBox {
 
 	@Override
 	public boolean equals(Object obj) {
-		if (!(obj instanceof BallotBox)) {
+		if (!(obj instanceof BallotBox<?>)) {
 			return false;
 		}
-		BallotBox temp = (BallotBox) obj;
+		BallotBox<?> temp = (BallotBox<?>) obj;			
+		
 		if (!temp.getAddress().equals(this.getAddress())) {
 			return false;
 		}
-		return this.id == ((BallotBox) (obj)).id;
+		return this.id == temp.id;
+		
 	}
 }

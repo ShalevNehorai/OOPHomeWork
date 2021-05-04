@@ -2,24 +2,24 @@ package id318449782_id209544642;
 
 import java.time.LocalDate;
 
-public class Citizen {
+public abstract class Citizen {
 	private String name;
 	private String id;
 	private int birthYear;
-	private boolean isQurentined;
-	private BallotBox ballotBox;
+//	private boolean isQurentined;
+	protected BallotBox ballotBox;
 
-	public Citizen(String name, String id, int birthYear, boolean isQurentined, BallotBox ballotBox)
+	public Citizen(String name, String id, int birthYear)
 			throws InvalidIdException, NullPointerException, CantVoteException {
 		this.name = name;
 		setId(id);
 		this.birthYear = birthYear;
-		this.isQurentined = isQurentined;
-		if (ballotBox != null)
+//		this.isQurentined = isQurentined;
+		/*if (ballotBox != null)
 			this.ballotBox = ballotBox;
 		else
 			throw new NullPointerException("Ballot box is null!");
-		this.ballotBox.addCitizen(this);
+		this.ballotBox.addCitizen(this);*/
 	}
 
 	protected void setId(String id) throws InvalidIdException {
@@ -50,17 +50,17 @@ public class Citizen {
 		return ballotBox;
 	}
 
-	public boolean isQurentined() {
+	/*public boolean isQurentined() {
 		return isQurentined;
-	}
+	}*/
 
-	public boolean isAbove18() {
+	public final boolean isAbove18() {
 		return LocalDate.now().getYear() - birthYear >= 18;
 	}
 
-	public void vote(int partyToVote) throws CantVoteException, IndexOutOfBoundsException {
+	public final void vote(int partyToVote) throws CantVoteException, IndexOutOfBoundsException {
 		if(partyToVote != -1)
-			this.ballotBox.vote(partyToVote);
+			this.ballotBox.vote(this, partyToVote);
 	}
 
 	@Override

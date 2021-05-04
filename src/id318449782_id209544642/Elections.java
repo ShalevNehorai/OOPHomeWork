@@ -175,7 +175,7 @@ public class Elections {
 	}
 
 	public String countVotesInBallotBox(BallotBox ballotBox){
-		StringBuffer str = new StringBuffer("In Ballot box with id " + ballotBox.getId() + ", " + ballotBox.votersPresentage() + "% of " + ballotBox.getNumOfCitizens() + " voters voted as followed: \n");
+		StringBuffer str = new StringBuffer("In Ballot box with id " + ballotBox.getId() + ", " + ballotBox.votersPrecentage() + "% of " + ballotBox.getNumOfCitizens() + " voters voted as followed: \n");
 		for(int i=0; i < getNumOfParties(); i++){
 			str.append("for the party: ").append(parties[i].getName()).append(" voted ").append(ballotBox.getVotes()[i]).append("\n");
 		}

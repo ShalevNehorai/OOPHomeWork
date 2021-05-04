@@ -2,7 +2,6 @@ package id318449782_id209544642;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.Arrays;
 
 public class PoliticalParty {
 
@@ -12,17 +11,17 @@ public class PoliticalParty {
 
 	private String name;
 	private LocalDate partyCreation;
-	private Candid[] canidates;
+	private Set<Candid> canidates;
 	private ePoliticalStand partyStand;
 
-	public PoliticalParty(String partyName, ePoliticalStand partyStand, LocalDate creationDate, Candid[] canidates) {
+	public PoliticalParty(String partyName, ePoliticalStand partyStand, LocalDate creationDate, Set<Candid> canidates) {
 		this.name = partyName;
 		this.partyStand = partyStand;
 		if(canidates != null){
 			this.canidates = canidates;
 		}
 		else{
-			this.canidates = new Candid[1];
+			this.canidates = new Set<Candid>();
 		}
 		this.partyCreation = creationDate;
 	}
@@ -33,9 +32,9 @@ public class PoliticalParty {
 		this(partyName, partyStand, LocalDate.now(), null);
 	}
 	
-	public Candid[] getCanidates() {
-		return Arrays.copyOf(canidates, canidates.length);
-	}
+	public Set<Candid> getCanidates() {
+		return canidates;
+	}	
 
 	public String getName() {
 		return name;
@@ -59,18 +58,18 @@ public class PoliticalParty {
 		if (isCanidateExist(canidate)) {
 			throw new AlreadyExistException();
 		}
-		canidates = (Candid[]) Util.addCellInArray(canidates, canidate, primeriesLocation);
+		canidates.add(canidate);// = (Candid[]) Util.addCellInArray(canidates, canidate, primeriesLocation);
 	}
 
 	public boolean isCanidateExist(Candid canidate) {
-		return Util.indexOf(canidates, canidate) >= 0;
+		return canidates.contains(canidate); //Util.indexOf(canidates, canidate) >= 0;
 	}
 	
 	@Override
 	public String toString() {
 		StringBuffer output = new StringBuffer("Political Party ");
 		output.append(name).append(" is standing for the ").append(partyStand.name()).append(", and have ");
-		output.append(canidates.length).append(" canidates.");
+		output.append(canidates.size()).append(" canidates.");
 		return output.toString();
 	}
 
