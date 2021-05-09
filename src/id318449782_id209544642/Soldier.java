@@ -20,6 +20,11 @@ public class Soldier extends Citizen {
 		ballotBox.addCitizen(this);
 	}
 	
+	protected Soldier(String name, String id, int birthYear, boolean isCarryWeapon)
+			throws InvalidIdException, CantVoteException, NullPointerException {		
+		super(name, id, birthYear);	
+	}
+	
 	public static boolean isSoldierAge(int birthYear){
 		 int age = LocalDate.now().getYear() - birthYear;
 		 return ((age >= MIN_SOLDIER_AGE) && (age <= MAX_SOLDIER_AGE));
@@ -29,7 +34,7 @@ public class Soldier extends Citizen {
 		StringBuffer output = new StringBuffer().append(super.toString());
 		if(this.carryWeapon())
 			output.append(" is carrying a weapon ");
-		output.append("Soldier");
+		output.append(" (Soldier)");
 		return output.toString();
 	}
 	

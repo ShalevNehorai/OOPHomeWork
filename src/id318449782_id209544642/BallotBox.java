@@ -72,6 +72,9 @@ public class BallotBox <T extends Citizen>{
 			throw new CantVoteException("The citizen is below valid voting age");
 		}
 	}*/
+	public Set<T> getVoters() {
+		return voters;
+	}
 
 	public void vote(T citizen, int partyPostion) throws CantVoteException {
 		if(!voters.contains(citizen))

@@ -6,35 +6,43 @@ import java.util.InputMismatchException;
 import id318449782_id209544642.PoliticalParty.ePoliticalStand;
 
 public class Elections {
-	private Citizen[] voters;
-	private PoliticalParty[] parties;
-	private BallotBox[] ballotBoxes;
+	private Set<Citizen> voters;
+	private Set<PoliticalParty> parties;
+	private Set<BallotBox<?>> ballotBoxes;
 	private LocalDate dateOfElection;
 	private boolean voteOccurred = false;
 
 	public Elections() {
-		this(new Citizen[1], new PoliticalParty[1], new BallotBox[1], LocalDate.now());
+		this(new Set<Citizen>(), new Set<PoliticalParty>(), new Set<BallotBox<?>>(), LocalDate.now());
 	}
 
 	public Elections(LocalDate date){
-		this(new Citizen[1], new PoliticalParty[1], new BallotBox[1], date);
+		this(new Set<Citizen>(), new Set<PoliticalParty>(), new Set<BallotBox<?>>(), date);
 	}
 
-	public Elections(Citizen[] voters, PoliticalParty[] parties, BallotBox[] boxes, LocalDate date) {
+	public Elections(Set<Citizen> voters, Set<PoliticalParty> parties, Set<BallotBox<?>> boxes, LocalDate date) {
 		this.parties = parties;
 		this.ballotBoxes = boxes;
 		this.voters = voters;
 		this.dateOfElection = date;
 		voteOccurred = false;
+		
+		this.ballotBoxes = new Set<BallotBox<?>>();
+		
+		this.ballotBoxes.add(new BallotBox<RegularCitizen	>(null, getNumOfParties()))
 	}
 
 	public void addPoliticalParty(PoliticalParty party) throws AlreadyExistException{
 		if (!checkPartyExist(party) ) {
-			parties = (PoliticalParty[]) Util.addToLast(parties, party);
-			for (int i = 0; i < ballotBoxes.length; i++) {
-				if(ballotBoxes[i] != null) {
-					ballotBoxes[i].addParty();
-				}
+			parties.add(party);
+//			parties = (PoliticalParty[]) Util.addToLast(parties, party);
+//			for (int i = 0; i < ballotBoxes.length; i++) {
+//				if(ballotBoxes[i] != null) {
+//					ballotBoxes[i].addParty();
+//				}
+//			}
+			for (BallotBox box : ballotBoxes) {
+				box.addParty();
 			}
 		}else {
 			throw new AlreadyExistException();
@@ -49,20 +57,20 @@ public class Elections {
 			throw new AlreadyExistException();
 		}
 		else {
-			ballotBoxes = (BallotBox[])Util.addToLast(ballotBoxes, box);
+			ballotBoxes.add(box);// = (BallotBox[])Util.addToLast(ballotBoxes, box);
 		}
 	}
 	public void addBallotBox(String address, char type) throws AlreadyExistException, InputMismatchException{
 		BallotBox ballotBox;
 		switch(type){
 			case 'c':
-				ballotBox = new CoronaBallotBox(address, getNumOfParties());
+				ballotBox = new BallotBox<CoronaSickCitizen>(address, getNumOfParties());
 				break;
 			case 's':
-				ballotBox = new SoldierBallotBox(address, getNumOfParties());
+				ballotBox = new BallotBox<Soldier>(address, getNumOfParties());
 				break;
 			case 'r':
-				ballotBox = new BallotBox(address, getNumOfParties());
+				ballotBox = new BallotBox<RegularCitizen>(address, getNumOfParties());
 				break;
 			default:
 				throw new InputMismatchException("the type " + type + "is not valid");
@@ -77,7 +85,7 @@ public class Elections {
 			throw new AlreadyExistException();
 		}
 
-	  	voters = (Citizen[]) Util.addToLast(voters, citizen);
+	  	voters.add(citizen);// = (Citizen[]) Util.addToLast(voters, citizen);
 	}
 	public void addCitizen(String name, String id, int birthYear, boolean isQurentined, int ballotBoxIndex)
 	  throws InvalidIdException, NullPointerException, CantVoteException, AlreadyExistException{

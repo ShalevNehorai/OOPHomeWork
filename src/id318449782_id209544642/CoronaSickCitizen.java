@@ -1,6 +1,6 @@
 package id318449782_id209544642;
 
-public class CoronaSickCitizen extends Citizen {
+public class CoronaSickCitizen extends Citizen implements Sickable {
 	
 	private int numOfSickDays;
 
@@ -18,11 +18,16 @@ public class CoronaSickCitizen extends Citizen {
 		this.numOfSickDays = numOfSickDays;
 	}
 	
-	public int getNumOfSickDays() {
-		return numOfSickDays;
-	}
-	
 	public void setNumOfSickDays(int numOfSickDays) {
 		this.numOfSickDays = numOfSickDays;
+	}
+
+	@Override
+	public int getSickDays() {
+		return numOfSickDays;
+	}
+	@Override
+	public boolean isSick() {
+		return getSickDays() != 0;
 	}
 }

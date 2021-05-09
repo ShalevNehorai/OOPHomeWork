@@ -1,8 +1,9 @@
 package id318449782_id209544642;
 
+import java.util.Iterator;
 import java.util.Vector;
 
-public class Set <T>{
+public class Set <T> implements Iterable<T>{
 	private Vector<T> vector;
 
 	public Set() {
@@ -37,6 +38,10 @@ public class Set <T>{
 	}
 	public T get(int index){
 		return vector.get(index);
+	}
+	@Override
+	public Iterator<T> iterator() {
+		return vector.iterator();
 	}
 	
 	@Override

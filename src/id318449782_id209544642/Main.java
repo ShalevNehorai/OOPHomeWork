@@ -225,14 +225,14 @@ public class Main {
 				System.out.println("The election is starting!");
 				for (Citizen voter : manage.getCitizens()) {
 					System.out.println(voter.toString());
-					if (voter.isQurentined()) {
-						System.out.println("You are qurentined, are you wearing a mask?");
-						char isProtected = scan.next().charAt(0);
-						if (isProtected != 'y' && isProtected != 'Y') {
-							System.out.println("Come again with a mask to vote!");
-							continue;
-						}
-					}
+//					if (voter.isQurentined()) {
+//						System.out.println("You are qurentined, are you wearing a mask?");
+//						char isProtected = scan.next().charAt(0);
+//						if (isProtected != 'y' && isProtected != 'Y') {
+//							System.out.println("Come again with a mask to vote!");
+//							continue;
+//						}
+//					}
 
 					System.out.println(
 							"To what Political Party are you voting? type the party's number\ntype -1 to not vote");
