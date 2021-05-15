@@ -1,114 +1,145 @@
 package id318449782_id209544642;
 
+import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.InputMismatchException;
+import java.util.Iterator;
+import java.util.Vector;
 
+import id318449782_id209544642.BallotBox.BallotType;
 import id318449782_id209544642.PoliticalParty.ePoliticalStand;
 
-public class Elections {
+public class Elections implements Serializable{
 	private Set<Citizen> voters;
 	private Set<PoliticalParty> parties;
-	private Set<BallotBox<?>> ballotBoxes;
+	
+	private Set<BallotBox<RegularCitizen>> regCitizenBallotBoxes;
+	private Set<BallotBox<Soldier>> soldierBallotBoxes;
+	private Set<BallotBox<CoronaSickCitizen>> sickBallotBoxes;
+	private Set<BallotBox<SickSoldier>> sickSoldierBallotBoxes;
+	
 	private LocalDate dateOfElection;
 	private boolean voteOccurred = false;
 
 	public Elections() {
-		this(new Set<Citizen>(), new Set<PoliticalParty>(), new Set<BallotBox<?>>(), LocalDate.now());
+		this(new Set<Citizen>(), new Set<PoliticalParty>(), LocalDate.now());
 	}
 
 	public Elections(LocalDate date){
-		this(new Set<Citizen>(), new Set<PoliticalParty>(), new Set<BallotBox<?>>(), date);
+		this(new Set<Citizen>(), new Set<PoliticalParty>(), date);
 	}
 
-	public Elections(Set<Citizen> voters, Set<PoliticalParty> parties, Set<BallotBox<?>> boxes, LocalDate date) {
+	public Elections(Set<Citizen> voters, Set<PoliticalParty> parties, LocalDate date) {
 		this.parties = parties;
-		this.ballotBoxes = boxes;
 		this.voters = voters;
 		this.dateOfElection = date;
 		voteOccurred = false;
 		
-		this.ballotBoxes = new Set<BallotBox<?>>();
 		
-		this.ballotBoxes.add(new BallotBox<RegularCitizen	>(null, getNumOfParties()))
+		this.regCitizenBallotBoxes = new Set<BallotBox<RegularCitizen>>();
+		this.soldierBallotBoxes = new Set<BallotBox<Soldier>>();
+		this.sickBallotBoxes = new Set<BallotBox<CoronaSickCitizen>>();
+		this.sickSoldierBallotBoxes = new Set<BallotBox<SickSoldier>>();
 	}
 
 	public void addPoliticalParty(PoliticalParty party) throws AlreadyExistException{
-		if (!checkPartyExist(party) ) {
-			parties.add(party);
-//			parties = (PoliticalParty[]) Util.addToLast(parties, party);
-//			for (int i = 0; i < ballotBoxes.length; i++) {
-//				if(ballotBoxes[i] != null) {
-//					ballotBoxes[i].addParty();
-//				}
-//			}
-			for (BallotBox box : ballotBoxes) {
-				box.addParty();
-			}
-		}else {
+		boolean success = parties.add(party);
+					
+		if(!success) {
 			throw new AlreadyExistException();
 		}
+		addPartyToAllBoxes();
 	}
 
 	public void addPoliticalParty(String name, ePoliticalStand stand, LocalDate creationDate) throws AlreadyExistException{
 		addPoliticalParty(new PoliticalParty(name, stand, creationDate));
 	}
-	public void addBallotBox(BallotBox box) throws AlreadyExistException{
-		if(checkBallotBoxExist(box)) {
+	
+	public <T extends Citizen> void addBallotBox(BallotBox<T> box, BallotType type) throws AlreadyExistException{
+		boolean success = true;
+		switch (type) {
+		case RegularCitizen:
+			success = regCitizenBallotBoxes.add((BallotBox<RegularCitizen>)box);
+			break;
+		case SickCitizen:
+			success = sickBallotBoxes.add((BallotBox<CoronaSickCitizen>)box);
+			break;
+		case SickSoldier:
+			success =  sickSoldierBallotBoxes.add((BallotBox<SickSoldier>)box);
+			break;
+		case Soldier:
+			success = soldierBallotBoxes.add((BallotBox<Soldier>)box);
+			break;
+		} 
+		
+		if(!success) {
 			throw new AlreadyExistException();
 		}
-		else {
-			ballotBoxes.add(box);// = (BallotBox[])Util.addToLast(ballotBoxes, box);
-		}
 	}
-	public void addBallotBox(String address, char type) throws AlreadyExistException, InputMismatchException{
-		BallotBox ballotBox;
+	
+	public void addBallotBox(String address, BallotType type) throws AlreadyExistException, InputMismatchException{
+		BallotBox ballotBox = null;
 		switch(type){
-			case 'c':
+			case SickCitizen:
 				ballotBox = new BallotBox<CoronaSickCitizen>(address, getNumOfParties());
 				break;
-			case 's':
+			case Soldier:
 				ballotBox = new BallotBox<Soldier>(address, getNumOfParties());
 				break;
-			case 'r':
+			case SickSoldier:
+				ballotBox = new BallotBox<SickSoldier>(address, getNumOfParties());
+				break;
+			case RegularCitizen:
 				ballotBox = new BallotBox<RegularCitizen>(address, getNumOfParties());
 				break;
-			default:
-				throw new InputMismatchException("the type " + type + "is not valid");
-
+				default:
+				ballotBox = null;
+				break;
 		}
 		
-		addBallotBox(ballotBox);
+		addBallotBox(ballotBox, type);
 	}
 
 	public void addCitizen(Citizen citizen) throws AlreadyExistException{
-		if(checkCitizenExists(citizen)){
+	  	boolean success = voters.add(citizen);;
+		
+		if(!success) {
 			throw new AlreadyExistException();
 		}
-
-	  	voters.add(citizen);// = (Citizen[]) Util.addToLast(voters, citizen);
 	}
-	public void addCitizen(String name, String id, int birthYear, boolean isQurentined, int ballotBoxIndex)
+	public void addCitizen(String name, String id, int birthYear, boolean isSick, int sickDays, int ballotBoxIndex)
 	  throws InvalidIdException, NullPointerException, CantVoteException, AlreadyExistException{
 		Citizen citizen;
 		if(Soldier.isSoldierAge(birthYear)) {
-			citizen = new Soldier(name, id, birthYear, isQurentined, ballotBoxes[ballotBoxIndex]);
+			if(isSick) {
+				citizen = new SickSoldier(name, id, birthYear, sickSoldierBallotBoxes.get(ballotBoxIndex), false, sickDays);//TODO change the carry weapon
+			}
+			else {				
+				citizen = new Soldier(name, id, birthYear, soldierBallotBoxes.get(ballotBoxIndex), false);//TODO change the carry weapon
+			}
 		}
 		else {
-			citizen = new Citizen(name, id, birthYear, isQurentined, ballotBoxes[ballotBoxIndex]);
+			if(isSick) {
+				citizen = new CoronaSickCitizen(name, id, birthYear, sickDays, sickBallotBoxes.get(ballotBoxIndex));
+			}
+			else {				
+				citizen = new RegularCitizen(name, id, birthYear, regCitizenBallotBoxes.get(ballotBoxIndex));
+			}
 		}
 		
 		addCitizen(citizen);
 	}
-	public void addCanadid(String name, String id, int birthYear, boolean isQurentined, int ballotBoxIndex, int partyIndex, int primeriesPosition)
+	
+	public void addCanadid(String name, String id, int birthYear, int ballotBoxIndex, int partyIndex, int primeriesPosition)
 	  throws InvalidIdException, NotAdultException, AlreadyExistException, NullPointerException, CantVoteException{
 		if(!Soldier.isSoldierAge(birthYear)) {
-			addCitizen(new Candid(name, id, birthYear, isQurentined, ballotBoxes[ballotBoxIndex], parties[partyIndex], primeriesPosition));
+			addCitizen(new Candid(name, id, birthYear, regCitizenBallotBoxes.get(ballotBoxIndex), parties.get(partyIndex), primeriesPosition));
 		}else {
 			throw new NotAdultException("A soldier can't be a canidate for a Political Party");
 		}
 	}
 
-	public PoliticalParty[] getParties() {
+	public Set<PoliticalParty> getParties() {
 		return parties;
 	}
 
@@ -129,97 +160,153 @@ public class Elections {
 		return super.equals(obj);
 	}
 
-	public boolean checkPartyExist(PoliticalParty party) {
+	/*public boolean checkPartyExist(PoliticalParty party) {
 		return getPartyIndex(party) >= 0;
-	}
+	}*/
 
 	public int getNumOfParties() {
-		for (int i = 0; i < parties.length; i++) {
-			if (parties[i] == null) {
-				return i;
-			}
-		}
-		return parties.length;
+		return parties.size();
 	}
 
-	public int getNumOfBallotBox(){
-		for (int i = 0; i < ballotBoxes.length; i++) {
-			if (ballotBoxes[i] == null) {
-				return i;
-			}
-		}
-		return ballotBoxes.length;
+	public int getNumOfTypeBallotBox(BallotType type){
+		return getBallotBoxes(type).size();
 	}
 
 	public int getNumOfCitizens(){
-		for (int i = 0; i < voters.length; i++) {
-			if (voters[i] == null) {
-				return i;
-			}
-		}
-		return voters.length;
+		return voters.size();
 	}
 	public LocalDate getDateOfElection() {
 		return dateOfElection;
 	}
 	
 	public int getPartyIndex(PoliticalParty party) {
-		return Util.indexOf(parties, party);
+		return parties.indexOf(party);
 	}
-	public int getBallotBoxIndex(BallotBox box) {
-		return Util.indexOf(ballotBoxes, box);
+	
+	public int getBallotBoxIndex(BallotBox box, BallotType type) {
+		return getBallotBoxes(type).indexOf(box);
 	}
-	public boolean checkBallotBoxExist(BallotBox box) {
+	
+	public BallotBox<?> getBallotBox(int index, BallotType type){
+		return getBallotBoxes(type).get(index);
+	}
+	/*public boolean checkBallotBoxExist(BallotBox box) {
 		return getBallotBoxIndex(box) >= 0;
-	}
-	public boolean checkCitizenExists(Citizen citizen){
+	}*/
+	
+	/*public boolean checkCitizenExists(Citizen citizen){
 		return Util.indexOf(voters, citizen) >= 0;
-	}
-	public Citizen[] getVoters() {
+	}*/
+	
+	public Set<Citizen> getVoters() {
 		return voters;
 	}
-	public BallotBox[] getBallotBoxes() {
-		return ballotBoxes;
+	
+	public Set<BallotBox<?>> getBallotBoxes(BallotType type) {
+		Set<BallotBox<?>> set = new Set<BallotBox<?>>();
+		
+		switch (type) {
+		case RegularCitizen:
+			set.addAll(regCitizenBallotBoxes);
+			/*for (BallotBox<RegularCitizen> box : regCitizenBallotBoxes) {
+				set.add(box);
+			}*/
+			break;
+		case SickCitizen:
+			set.addAll(sickBallotBoxes);
+			break;
+		case SickSoldier:
+			set.addAll(sickSoldierBallotBoxes);
+			break;
+		case Soldier:
+			set.addAll(soldierBallotBoxes);
+			break;
+		default:
+			break;
+		}
+		
+		return set;
+	}
+	public Set<BallotBox> getAllBallotBoxes(){
+		Set<BallotBox> output = new Set<BallotBox>();
+		output.addAll(getBallotBoxes(BallotType.RegularCitizen));
+		output.addAll(getBallotBoxes(BallotType.SickCitizen));
+		output.addAll(getBallotBoxes(BallotType.SickSoldier));
+		output.addAll(getBallotBoxes(BallotType.Soldier));	
+		return output;
 	}
 
 	public String countVotesInBallotBox(BallotBox ballotBox){
 		StringBuffer str = new StringBuffer("In Ballot box with id " + ballotBox.getId() + ", " + ballotBox.votersPrecentage() + "% of " + ballotBox.getNumOfCitizens() + " voters voted as followed: \n");
 		for(int i=0; i < getNumOfParties(); i++){
-			str.append("for the party: ").append(parties[i].getName()).append(" voted ").append(ballotBox.getVotes()[i]).append("\n");
+			str.append("for the party: ").append(parties.get(i).getName()).append(" voted ").append(ballotBox.getVotes().get(i)).append("\n");
 		}
 		return str.toString();
 	}
+	public <T extends Citizen> String countVotesInBallotType(Set<BallotBox<T>> boxes) {
+		StringBuffer str = new StringBuffer();
+		
+		Iterator<BallotBox<T>> iter = boxes.iterator();
+		
+		while(iter.hasNext()) {
+			str.append(countVotesInBallotBox(iter.next())).append("\n");
+		}
+		
+		return str.toString();
+	}
+	
 	public String votesInEveryBallotBox(){
 		StringBuffer str = new StringBuffer();
-		for (int i = 0; i < getNumOfBallotBox(); i++) {
-			str.append(countVotesInBallotBox(ballotBoxes[i])).append("\n");
-		}
+		
+		str.append(countVotesInBallotType(regCitizenBallotBoxes));
+		str.append(countVotesInBallotType(sickBallotBoxes));
+		str.append(countVotesInBallotType(soldierBallotBoxes));
+		str.append(countVotesInBallotType(sickSoldierBallotBoxes));
+		
 		return str.toString();
+	}
+	
+	public <T extends Citizen> void countAllVotesInType(Set<BallotBox<T>> boxes, int[] votes) {	
+		for (BallotBox<T> box : boxes) {
+			for (int i = 0; i < votes.length; i++) {
+				votes[i] += box.getVotes().get(i);
+			}
+		}
 	}
 
 	public String countAllVotes(){
 		int[] votes = new int[getNumOfParties()];
-		int numOfBallotBox = getNumOfBallotBox();
-		for (int i = 0; i < numOfBallotBox; i++) {
-			for(int j = 0; j < votes.length; j++){
-				votes[j] += ballotBoxes[i].getVotes()[j];
-			}
-		}
+		
+		countAllVotesInType(regCitizenBallotBoxes, votes);
+		countAllVotesInType(soldierBallotBoxes, votes);
+		countAllVotesInType(sickBallotBoxes, votes);
+		countAllVotesInType(sickSoldierBallotBoxes, votes);
 
 		StringBuffer str = new StringBuffer("In the ELECTIONS the votes were as following: \n");
 		for(int i=0; i < getNumOfParties(); i++){
-			str.append(i).append(") for the party: ").append(parties[i].getName()).append(" voted ").append(votes[i]).append("\n");
+			str.append(i).append(") for the party: ").append(parties.get(i).getName()).append(" voted ").append(votes[i]).append("\n");
 		}
 
 		return str.toString();
 	}
 	
-	public void resetAllVotes(){
+	private void addPartyToAllBoxes() {
+		Set<BallotBox> boxes = getAllBallotBoxes();
+		for (BallotBox box : boxes) {
+			box.addParty();
+		}
+	}
+	
+	/*public void resetAllVotes(){
 		int numOfBallotBox = getNumOfBallotBox();
 		for (int i = 0; i < numOfBallotBox; i++) {
 			ballotBoxes[i].resetVotes();
 		}
-	}
+		
+		for (BallotBox<RegularCitizen> box : regCitizenBallotBoxes) {
+			box.resetVotes();
+		}
+	}*/
 
 	public void setVoteOccurred(boolean voteOccurred) {
 		this.voteOccurred = voteOccurred;

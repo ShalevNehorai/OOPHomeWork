@@ -1,25 +1,41 @@
 package id318449782_id209544642;
 
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.time.DateTimeException;
 import java.time.LocalDate;
 import java.util.InputMismatchException;
 import java.util.Scanner;
 
+import id318449782_id209544642.BallotBox.BallotType;
 import id318449782_id209544642.PoliticalParty.ePoliticalStand;
 
 public class Main {
-
 	public static void main(String[] args) {
 		Manager manage = new Manager();
 		Scanner scan = new Scanner(System.in);
-		boolean validAnswer = false;
+		
+		try{
+			getElectionsFromData(manage, scan);
+		}
+		catch(FileNotFoundException e){
+			System.out.println(e.getMessage());
+		}
+		catch(IOException e){
+			System.out.println(e.getMessage());
+		}
+		catch(ClassNotFoundException e){
+			System.out.println(e.getMessage());
+		}
+		catch(Exception e){
+			System.out.println(e.getMessage());
+		}
+		
 
-		LocalDate dateNewElections = startNewElections(scan);
-		if (dateNewElections != null) {
-			manage.createNewElections(dateNewElections);
-		} else {
-			System.out.println("New elections didn't happen, have a great day!");
-			scan.close();
+		if(startNewElections(manage, scan))
+			System.out.println("New elections started.");
+		else{
+			System.out.println("There is no new election");	
 		}
 
 		int choise = -1;
@@ -33,63 +49,19 @@ public class Main {
 
 			switch (choise) {
 			case 1:
-				System.out.println("Enter the new Ballot box address");
-				scan.skip("[\r\n]+");
-				String ballotBoxAddress = scan.nextLine();
-				validAnswer = false;
-				while (!validAnswer) {
-					try {
-						System.out.println("What is the BallotBox type: \nc - Corona\ns - Soldier\nr - Regular\n");
-						char type = scan.next().charAt(0);
-						manage.addBallotBox(ballotBoxAddress, type);
-						validAnswer = true;
-					} catch (AlreadyExistException e) {
-						System.out.println(e.getMessage());
-					} catch (InputMismatchException e) {
-						System.out.println("invalid type, try again");
-					} catch (Exception e) {
-						System.out.println(e.getMessage());
-					}
+				try {
+					addBallotBox(manage, scan);
+				} catch (AlreadyExistException e) {
+					System.out.println(e.getMessage());
+				} catch (InputMismatchException e) {
+					System.out.println("invalid type, try again");
+				} catch (Exception e) {
+					System.out.println(e.getMessage());
 				}
 				break;
 			case 2:
-				System.out.println("What is your name?");
-				scan.skip("[\r\n]+");
-				String name = scan.nextLine();
-				System.out.println("Enter your ID ");
-				String id = scan.next();
-				System.out.println("In what year were you born?");
-				int birthYear = scan.nextInt();
-
-				System.out.println("In what BallotBox are you registered? type the number of the BallotBox");
-				System.out.println(manage.showAllBallotBoxes());
-				int ballotBox = -1;
-				validAnswer = false;
-				while (!validAnswer) {
-					ballotBox = scan.nextInt();
-					if (ballotBox >= 0 && ballotBox < manage.getNumOfBallotBoxes())
-						validAnswer = true;
-					else
-						System.out.println("Answer is not valid, try again");
-				}
-
-				boolean qurentined = false;
-
-				validAnswer = false;
-				while (!validAnswer) {
-					System.out.println("Are you qurentined? \n type Y or y for YES \n type n or N for NO");
-					char isQurentined = scan.next().charAt(0);
-					if (isQurentined == 'y' || isQurentined == 'Y') {
-						validAnswer = true;
-						qurentined = true;
-					} else if (isQurentined == 'N' || isQurentined == 'n') {
-						validAnswer = true;
-						qurentined = false;
-					} else
-						System.out.println("Answer is not valid, try again");
-				}
 				try {
-					manage.addCitizen(name, id, birthYear, qurentined, ballotBox);
+					addCitizen(manage, scan);
 				} catch (CantVoteException e) {
 					System.out.println("cant vote in the given ballot box because " + e.getMessage());
 				} catch (NullPointerException e) {
@@ -103,94 +75,11 @@ public class Main {
 				}
 				break;
 			case 3:
-				System.out.println("What is the name of the Political Party?");
-				scan.skip("[\r\n]+");
-				name = scan.nextLine();
-
-				validAnswer = false;
-
-				ePoliticalStand stand = ePoliticalStand.CENTER;
-				while (!validAnswer) {
-					System.out.println(
-							"What is the Political Stand of the party? \n type the first letter: Left , Right, Center ");
-					char politicalStand = scan.next().charAt(0);
-					switch (politicalStand) {
-					case 'L':
-					case 'l':
-						stand = ePoliticalStand.LEFT;
-						validAnswer = true;
-						break;
-					case 'R':
-					case 'r':
-						stand = ePoliticalStand.RIGHT;
-						validAnswer = true;
-						break;
-					case 'C':
-					case 'c':
-						stand = ePoliticalStand.CENTER;
-						validAnswer = true;
-						break;
-					default:
-						System.out.println("Answer is not valid, try again");
-						break;
-					}
-				}
-
-				validAnswer = false;
-				while (!validAnswer) {
-					try {
-						System.out.println("When did the party formed?");
-						LocalDate date = getDate(scan);
-						if (!date.isAfter(LocalDate.now())) {
-							manage.addParty(name, stand, date);
-							validAnswer = true;
-						} else {
-							System.out.println("Date is not valid, try again\n");
-						}
-					} catch (DateTimeException e) {
-						System.out.println("Invalid date inputs, try again");
-					} catch (AlreadyExistException e) {
-						System.out.println("Political Party already exist");
-					} catch (NumberFormatException e) {
-						System.out.println("Invalid input - input a number or NOW only");
-					}
-
-				}
+				addPoliticalParty(manage, scan);
 				break;
 			case 4:
-				System.out.println("What is your name?");
-				scan.skip("[\r\n]+");
-				name = scan.nextLine();
-				System.out.println("Enter your ID ");
-				id = scan.next();
-				System.out.println("In what year were you born?");
-				birthYear = scan.nextInt();
-				System.out.println("In what BallotBox are you registered? type the number of the BallotBox");
-				System.out.println(manage.showAllBallotBoxes());
-				ballotBox = scan.nextInt();
-
-				qurentined = false;
-
-				validAnswer = false;
-				while (!validAnswer) {
-					System.out.println("Are you qurentined? \n type Y or y for YES \n type n or N for NO");
-					char isQurentined = scan.next().charAt(0);
-					if (isQurentined == 'y' || isQurentined == 'Y') {
-						validAnswer = true;
-						qurentined = true;
-					} else if (isQurentined == 'N' || isQurentined == 'n') {
-						validAnswer = true;
-						qurentined = false;
-					} else
-						System.out.println("Answer is not valid, try again");
-				}
 				try {
-					System.out.println("In what party does the canidate run for? type the number of the party");
-					System.out.println(manage.showAllParties());
-					int party = scan.nextInt();
-					System.out.println("Where is the canidate in the priemeries?");
-					int spot = scan.nextInt() - 1;
-					manage.addCandid(name, id, birthYear, qurentined, ballotBox, party, spot);
+					addCandid(manage, scan);
 				} catch (NotAdultException e) {
 					System.out.println("Canidate have to be an adult!");
 				} catch (CantVoteException e) {
@@ -205,72 +94,251 @@ public class Main {
 
 				break;
 			case 5:
-				System.out.println(manage.showAllBallotBoxes());
+				System.out.println(showAllBallotBox(manage));
 				break;
 			case 6:
-				System.out.println(manage.showAllCitizens());
+				System.out.println(showAllCitizen(manage));
 				break;
 			case 7:
-				System.out.println(manage.showAllParties());
+				System.out.println(showAllPoliticalParty(manage));
 				break;
 			case 8:
-				if(manage.getCurrentElection().isVoteOccurred()){
-					System.out.println("voting already occured, if you want to vote again you need to create new elections");
-					dateNewElections = startNewElections(scan);
-					if (dateNewElections != null) {
-						manage.createNewElections(dateNewElections);
-					}
-					break;
-				}
-				System.out.println("The election is starting!");
-				for (Citizen voter : manage.getCitizens()) {
-					System.out.println(voter.toString());
-//					if (voter.isQurentined()) {
-//						System.out.println("You are qurentined, are you wearing a mask?");
-//						char isProtected = scan.next().charAt(0);
-//						if (isProtected != 'y' && isProtected != 'Y') {
-//							System.out.println("Come again with a mask to vote!");
-//							continue;
-//						}
-//					}
-
-					System.out.println(
-							"To what Political Party are you voting? type the party's number\ntype -1 to not vote");
-					System.out.println(manage.showAllParties());
-
-					validAnswer = false;
-					while (!validAnswer) {
-						int party = scan.nextInt();
-						try {
-							voter.vote(party);
-							validAnswer = true;
-						} catch (CantVoteException e) {
-							System.out.println("Given party is not valid, choose a valid party");
-						}
-					}
-				}
-				manage.endElections();
-				System.out.println("The election is over!");
+				startElection(manage, scan);
 				break;
 			case 9:
-				try {
-					System.out.println("The result of the last elections in each BallotBox:");
-					System.out.println(manage.getLastVotesInAllBallotBoxes());
-					System.out.println("The results of the last election:");
-					System.out.println(manage.getLastVotedElectionsResults());
-				}
-				catch(IndexOutOfBoundsException e){
-					System.out.println("Elections didn't happen");
-				}
+				System.out.println(showElection(manage));
 				break;
 			case 10:
-				System.out.println("The program is over, thank you");
+				try{
+				System.out.println(exitMenu(manage, scan));
+				}
+				catch(FileNotFoundException e){
+					System.out.println(e.getMessage());
+				}
+				catch(IOException e){
+					System.out.println(e.getMessage());
+				}
+				catch(Exception e){
+					System.out.println(e.getMessage());
+				}
 				break;
 			}
 
 		} while (choise != 10);
 
 		scan.close();
+
+	}
+
+	public static void addPoliticalParty(Manager manage, Scanner scan) {
+		System.out.println("What is the name of the Political Party?");
+		scan.skip("[\r\n]+");
+		String name = scan.nextLine();
+
+		boolean validAnswer = false;
+
+		ePoliticalStand stand = ePoliticalStand.CENTER;
+		while (!validAnswer) {
+			System.out.println(
+					"What is the Political Stand of the party? \n type the first letter: Left , Right, Center ");
+			char politicalStand = scan.next().charAt(0);
+			switch (politicalStand) {
+			case 'L':
+			case 'l':
+				stand = ePoliticalStand.LEFT;
+				validAnswer = true;
+				break;
+			case 'R':
+			case 'r':
+				stand = ePoliticalStand.RIGHT;
+				validAnswer = true;
+				break;
+			case 'C':
+			case 'c':
+				stand = ePoliticalStand.CENTER;
+				validAnswer = true;
+				break;
+			default:
+				System.out.println("Answer is not valid, try again");
+				break;
+			}
+		}
+
+		validAnswer = false;
+		while (!validAnswer) {
+			try {
+				System.out.println("When did the party formed?");
+				LocalDate date = getDate(scan);
+				if (!date.isAfter(LocalDate.now())) {
+					manage.addParty(name, stand, date);
+					validAnswer = true;
+				} else {
+					System.out.println("Date is not valid, try again\n");
+				}
+			} catch (DateTimeException e) {
+				System.out.println("Invalid date inputs, try again");
+			} catch (AlreadyExistException e) {
+				System.out.println("Political Party already exist");
+			} catch (NumberFormatException e) {
+				System.out.println("Invalid input - input a number or NOW only");
+			}
+		}
+	}
+
+	public static void addBallotBox(Manager manage, Scanner scan) throws AlreadyExistException, InputMismatchException {
+		System.out.println("Enter the new Ballot box address");
+		scan.skip("[\r\n]+");
+		String ballotBoxAddress = scan.nextLine();
+		System.out.println("What is the BallotBox? Type the number for the type");
+		System.out.println(manage.showBallotBoxType());
+		int typeIndex = scan.nextInt();
+		
+		BallotType type = BallotType.values()[typeIndex];
+		manage.addBallotBox(ballotBoxAddress, type);
+	}
+
+	public static void addCandid(Manager manage, Scanner scan) throws InvalidIdException, NotAdultException,
+			AlreadyExistException, NullPointerException, CantVoteException {
+		System.out.println("What is your name?");
+		scan.skip("[\r\n]+");
+		String name = scan.nextLine();
+		System.out.println("Enter your ID ");
+		String id = scan.next();
+		System.out.println("In what year were you born?");
+		int birthYear = scan.nextInt();
+		System.out.println("In what BallotBox are you registered? type the number of the BallotBox");
+		System.out.println(manage.showAllBallotBoxes());
+		int ballotBox = scan.nextInt();
+
+		/*
+		 * qurentined = false;
+		 * 
+		 * validAnswer = false; while (!validAnswer) { System.out.
+		 * println("Are you qurentined? \n type Y or y for YES \n type n or N for NO");
+		 * char isQurentined = scan.next().charAt(0); if (isQurentined == 'y' ||
+		 * isQurentined == 'Y') { validAnswer = true; qurentined = true; } else if
+		 * (isQurentined == 'N' || isQurentined == 'n') { validAnswer = true; qurentined
+		 * = false; } else System.out.println("Answer is not valid, try again"); }
+		 */
+		System.out.println("In what party does the canidate run for? type the number of the party");
+		System.out.println(showAllPoliticalParty(manage));
+		int party = scan.nextInt();
+		System.out.println("Where is the canidate in the priemeries?");
+		int spot = scan.nextInt() - 1;
+		manage.addCandid(name, id, birthYear, false, ballotBox, party, spot);
+
+	}
+
+	public static void addCitizen(Manager manage, Scanner scan)
+			throws InvalidIdException, NullPointerException, CantVoteException, AlreadyExistException {
+		System.out.println("What is your name?");
+		scan.skip("[\r\n]+");
+		String name = scan.nextLine();
+		System.out.println("Enter your ID ");
+		String id = scan.next();
+		System.out.println("In what year were you born?");
+		int birthYear = scan.nextInt();
+
+		boolean qurentined = false;
+		int numOfSickDays = 0;
+		boolean validAnswer = false;
+		while (!validAnswer) {
+			System.out.println("Are you qurentined? \n type Y or y for YES \n type n or N for NO");
+			char isQurentined = scan.next().charAt(0);
+			if (isQurentined == 'y' || isQurentined == 'Y') {
+				validAnswer = true;
+				qurentined = true;
+				System.out.println("How many days were you sick?");
+				numOfSickDays = scan.nextInt();
+			} else if (isQurentined == 'N' || isQurentined == 'n') {
+				validAnswer = true;
+				qurentined = false;
+			} else
+				System.out.println("Answer is not valid, try again");
+		}
+		
+		BallotType type = manage.getBallotType(birthYear, qurentined);
+
+		System.out.println("In what BallotBox are you registered? type the number of the BallotBox");
+		System.out.println(manage.showAllTypeBallotBoxes(type));
+		int ballotBox = -1;
+		validAnswer = false;
+		while (!validAnswer) {
+			ballotBox = scan.nextInt();
+			if (ballotBox >= 0 && ballotBox < manage.getNumOfBallotBoxes(type))
+				validAnswer = true;
+			else
+				System.out.println("Answer is not valid, try again");
+		}
+		
+		manage.addCitizen(name, id, birthYear, qurentined, numOfSickDays, ballotBox);
+
+	}
+	
+	public static String showAllBallotBox(Manager manage) {
+		return manage.showAllBallotBoxes();
+	}
+
+	public static String showAllCitizen(Manager manage) {
+		return manage.showAllCitizens();
+	}
+
+	public static String showAllPoliticalParty(Manager manage) {
+		return manage.showAllParties();
+	}
+
+	public static void startElection(Manager manage, Scanner scan) {
+		if (manage.getCurrentElection().isVoteOccurred()) {
+			System.out.println("voting already occured, if you want to vote again you need to create new elections");
+			startNewElections(manage, scan);
+			return;
+		}
+
+		System.out.println("The election is starting!");
+		for (Citizen voter : manage.getCitizens()) {
+			System.out.println(voter.toString());
+
+			System.out.println("To what Political Party are you voting? type the party's number\ntype -1 to not vote");
+			System.out.println(manage.showAllParties());
+
+			boolean validAnswer = false;
+			while (!validAnswer) {
+				int party = scan.nextInt();
+				try {
+					voter.vote(party);
+					validAnswer = true;
+				} catch (CantVoteException e) {
+					System.out.println("Given party is not valid, choose a valid party");
+				}
+			}
+		}
+		manage.endElections();
+		System.out.println("The election is over!");
+
+	}
+
+	public static String showElection(Manager manage) {
+		StringBuffer output = new StringBuffer();
+		try {
+			output.append("The result of the last elections in each BallotBox:");
+			output.append(manage.getLastVotesInAllBallotBoxes());
+			output.append("The results of the last election:");
+			output.append(manage.getLastVotedElectionsResults());
+			return output.toString();
+		} catch (IndexOutOfBoundsException e) {
+			System.out.println(e.getMessage());
+		}
+		return "";
+	}
+
+	public static String exitMenu(Manager manage, Scanner scan) throws FileNotFoundException, IOException {
+		System.out.println("What is the address to save the data of the elections?");
+		scan.skip("[\r\n]+");
+		String address = scan.next();
+		
+		manage.saveAsBinaryFile(address);
+		
+		return "The program is over, thank you";
 	}
 
 	public static LocalDate getDate(Scanner scan) throws DateTimeException, NumberFormatException {
@@ -290,8 +358,9 @@ public class Main {
 		return date;
 	}
 
-	public static LocalDate startNewElections(Scanner scan) {
+	public static boolean startNewElections(Manager manage, Scanner scan) {
 		System.out.println("Start a new election? Type y or Y to start");
+		scan.skip("[\r\n]+");
 		boolean validAnswer = false;
 		char start = scan.next().charAt(0);
 		switch (start) {
@@ -309,9 +378,24 @@ public class Main {
 					System.out.println("Invalid input - input a number or NOW only");
 				}
 			}
-			return date;
+			manage.createNewElections(date);
+			return true;
 		default:
-			return null;
+			return false;
+		}
+	}
+	public static boolean getElectionsFromData(Manager manage, Scanner scan) throws IOException, FileNotFoundException, ClassNotFoundException{
+		System.out.println("Do you want to get elections data from a file? Type y or Y to get data");
+		char start = scan.next().charAt(0);
+		switch (start) {
+		case 'y':
+		case 'Y':
+			System.out.println("What is the address of the file?");
+			String address = scan.next();
+			manage.readBinaryFile(address);	
+			return true;
+		default:
+			return false;
 		}
 	}
 

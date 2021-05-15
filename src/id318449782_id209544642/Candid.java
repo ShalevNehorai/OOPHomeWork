@@ -1,6 +1,6 @@
 package id318449782_id209544642;
 
-public class Candid extends RegularCitizen {
+public class Candid extends RegularCitizen{
 	private PoliticalParty party;
 
 	public Candid(String name, String id, int birthYear, BallotBox<RegularCitizen> ballotBox,

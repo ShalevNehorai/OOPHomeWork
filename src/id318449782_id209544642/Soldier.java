@@ -34,7 +34,6 @@ public class Soldier extends Citizen {
 		StringBuffer output = new StringBuffer().append(super.toString());
 		if(this.carryWeapon())
 			output.append(" is carrying a weapon ");
-		output.append(" (Soldier)");
 		return output.toString();
 	}
 	

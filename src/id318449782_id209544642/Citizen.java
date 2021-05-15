@@ -1,12 +1,12 @@
 package id318449782_id209544642;
 
+import java.io.Serializable;
 import java.time.LocalDate;
 
-public abstract class Citizen {
+public abstract class Citizen implements Serializable {
 	private String name;
 	private String id;
 	private int birthYear;
-//	private boolean isQurentined;
 	protected BallotBox ballotBox;
 
 	public Citizen(String name, String id, int birthYear)
@@ -14,12 +14,6 @@ public abstract class Citizen {
 		this.name = name;
 		setId(id);
 		this.birthYear = birthYear;
-//		this.isQurentined = isQurentined;
-		/*if (ballotBox != null)
-			this.ballotBox = ballotBox;
-		else
-			throw new NullPointerException("Ballot box is null!");
-		this.ballotBox.addCitizen(this);*/
 	}
 
 	protected void setId(String id) throws InvalidIdException {
@@ -50,10 +44,6 @@ public abstract class Citizen {
 		return ballotBox;
 	}
 
-	/*public boolean isQurentined() {
-		return isQurentined;
-	}*/
-
 	public final boolean isAbove18() {
 		return LocalDate.now().getYear() - birthYear >= 18;
 	}
@@ -65,7 +55,7 @@ public abstract class Citizen {
 
 	@Override
 	public String toString() {
-		return "Citizen: name = " + name + ", id = " + id + ", birthYear = " + birthYear;
+		return getClass().getSimpleName() + ": name = " + name + ", id = " + id + ", birthYear = " + birthYear;
 	}
 
 	@Override

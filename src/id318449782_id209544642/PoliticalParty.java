@@ -1,9 +1,10 @@
 package id318449782_id209544642;
 
+import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
-public class PoliticalParty {
+public class PoliticalParty implements Serializable{
 
 	public static enum ePoliticalStand {
 		RIGHT, CENTER, LEFT
@@ -58,7 +59,7 @@ public class PoliticalParty {
 		if (isCanidateExist(canidate)) {
 			throw new AlreadyExistException();
 		}
-		canidates.add(canidate);// = (Candid[]) Util.addCellInArray(canidates, canidate, primeriesLocation);
+		canidates.add(canidate, primeriesLocation);// = (Candid[]) Util.addCellInArray(canidates, canidate, primeriesLocation);
 	}
 
 	public boolean isCanidateExist(Candid canidate) {

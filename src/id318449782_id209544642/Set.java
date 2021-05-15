@@ -1,21 +1,28 @@
 package id318449782_id209544642;
 
+import java.io.Serializable;
 import java.util.Iterator;
 import java.util.Vector;
 
-public class Set <T> implements Iterable<T>{
+public class Set <T> implements Iterable<T>, Serializable{
 	private Vector<T> vector;
 
 	public Set() {
 		this.vector = new Vector<T>();
 	}
 	
-	public boolean add(T obj) {
-		if(contains(obj)) {
+	public boolean add(T object) {	
+		return add(object, vector.size());
+	}
+	public boolean add(T object, int index){
+		if(contains(object)) {
 			return false;
 		}
-		vector.add(obj);
+		vector.add(index, object);	
 		return true;
+	}
+	public boolean addAll(Set<? extends T> collection){
+		return vector.addAll(collection.vector);
 	}
 	
 	public boolean contains(T object){
