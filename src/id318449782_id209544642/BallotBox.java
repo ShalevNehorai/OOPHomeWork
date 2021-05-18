@@ -16,7 +16,6 @@ public class BallotBox <T extends Citizen> implements Serializable{
 	private String address;
 	private Set<T> voters;
 
-//	private int[] votes;
 	private Vector<Integer> votes;
 
 	public final static int MIN_TO_VOTE = 18;
@@ -88,12 +87,6 @@ public class BallotBox <T extends Citizen> implements Serializable{
 
 		return (double)voteCount / getNumOfCitizens() * 100;
 	}
-	
-	/*public void resetVotes(){
-		for (int i = 0; i < votes.size(); i++) {
-			votes.set(i, 0);
-		}
-	}*/
 
 	@Override
 	public String toString() {
@@ -110,7 +103,6 @@ public class BallotBox <T extends Citizen> implements Serializable{
 		if (!temp.getAddress().equals(this.getAddress())) {
 			return false;
 		}
-		return this.id == temp.id;
-		
+		return this.id == temp.id;	
 	}
 }

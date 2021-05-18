@@ -5,7 +5,7 @@ public class Candid extends RegularCitizen{
 
 	public Candid(String name, String id, int birthYear, BallotBox<RegularCitizen> ballotBox,
 			PoliticalParty party, int primeriesPosition) throws InvalidIdException, NotAdultException,
-			AlreadyExistException, NullPointerException, CantVoteException {
+			AlreadyExistException, NullPointerException, CantVoteException, ArrayIndexOutOfBoundsException {
 		super(name, id, birthYear, ballotBox);
 
 		this.party = party;
@@ -24,7 +24,7 @@ public class Candid extends RegularCitizen{
 	public String toString() {
 		StringBuffer output = new StringBuffer();
 		output.append(super.toString()).append(" he is a candid in ").append(party.getName());
-		int spot = party.getCanidates().indexOf(this); //Util.indexOf(party.getCanidates(), this);
+		int spot = party.getCanidates().indexOf(this);
 		if (spot >= 0) {
 			output.append(", he is number ").append(spot + 1).append(" in the party ").append(party.getName());
 		}

@@ -147,7 +147,6 @@ public class Elections implements Serializable{
 	public String toString() {
 		StringBuffer output = new StringBuffer();
 		output.append("Elections at ").append(dateOfElection.toString()).append(":\n");
-//		output.append(b)
 
 		return output.toString();
 	}
@@ -159,10 +158,6 @@ public class Elections implements Serializable{
 		}
 		return super.equals(obj);
 	}
-
-	/*public boolean checkPartyExist(PoliticalParty party) {
-		return getPartyIndex(party) >= 0;
-	}*/
 
 	public int getNumOfParties() {
 		return parties.size();
@@ -190,13 +185,6 @@ public class Elections implements Serializable{
 	public BallotBox<?> getBallotBox(int index, BallotType type){
 		return getBallotBoxes(type).get(index);
 	}
-	/*public boolean checkBallotBoxExist(BallotBox box) {
-		return getBallotBoxIndex(box) >= 0;
-	}*/
-	
-	/*public boolean checkCitizenExists(Citizen citizen){
-		return Util.indexOf(voters, citizen) >= 0;
-	}*/
 	
 	public Set<Citizen> getVoters() {
 		return voters;
@@ -208,9 +196,6 @@ public class Elections implements Serializable{
 		switch (type) {
 		case RegularCitizen:
 			set.addAll(regCitizenBallotBoxes);
-			/*for (BallotBox<RegularCitizen> box : regCitizenBallotBoxes) {
-				set.add(box);
-			}*/
 			break;
 		case SickCitizen:
 			set.addAll(sickBallotBoxes);
@@ -296,17 +281,6 @@ public class Elections implements Serializable{
 			box.addParty();
 		}
 	}
-	
-	/*public void resetAllVotes(){
-		int numOfBallotBox = getNumOfBallotBox();
-		for (int i = 0; i < numOfBallotBox; i++) {
-			ballotBoxes[i].resetVotes();
-		}
-		
-		for (BallotBox<RegularCitizen> box : regCitizenBallotBoxes) {
-			box.resetVotes();
-		}
-	}*/
 
 	public void setVoteOccurred(boolean voteOccurred) {
 		this.voteOccurred = voteOccurred;

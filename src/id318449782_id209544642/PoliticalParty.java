@@ -50,7 +50,7 @@ public class PoliticalParty implements Serializable{
 		return formatter.format(this.partyCreation);
 	}
 
-	public void addCanidate(Candid canidate, int primeriesLocation) throws NotAdultException, AlreadyExistException, NullPointerException {
+	public void addCanidate(Candid canidate, int primeriesLocation) throws NotAdultException, AlreadyExistException, NullPointerException, ArrayIndexOutOfBoundsException {
 		if(canidate == null)
 			throw new NullPointerException();
 		if (!canidate.isAbove18()) {
@@ -59,11 +59,14 @@ public class PoliticalParty implements Serializable{
 		if (isCanidateExist(canidate)) {
 			throw new AlreadyExistException();
 		}
-		canidates.add(canidate, primeriesLocation);// = (Candid[]) Util.addCellInArray(canidates, canidate, primeriesLocation);
+		if(primeriesLocation < 0){
+			throw new ArrayIndexOutOfBoundsException("Primeries Location can not be negetaive.");
+		}
+		canidates.add(canidate, primeriesLocation);
 	}
 
 	public boolean isCanidateExist(Candid canidate) {
-		return canidates.contains(canidate); //Util.indexOf(canidates, canidate) >= 0;
+		return canidates.contains(canidate);
 	}
 	
 	@Override

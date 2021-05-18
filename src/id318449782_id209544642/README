@@ -1,12 +1,13 @@
-# Homework Number 1
+# Homework Number 2
 Submit by:
 Ilan Bondarevsky, Id: 318449782
 Shalev Nehorai, Id: 209544642
 
 Special Instructions:
 If a person is not voting, enter -1 when asked who to vote to.
-If a person is qurentined and didn't come with a mask, he will be counted as someone who didn't vote - skip his\her vote automaticly.
 When the elections are over, you need to create new elections to vote again. To create new election press 8 again.
-Every person, ballotbox and political party that you add will be added to the last elections.  
+Every person, ballotbox and political party that you add will be added to the last election.  
 The new election won't copy the information of the last election, need to add new data.
 The Results choice (9) will show the last elections results.
+To save and load the data you need to write the path of the file, the path needs to be separated with '/' and can have spaces.
+In the begininng of the problem, if the program didn't get a data to read and a new election didn't happen, then the program will be over.

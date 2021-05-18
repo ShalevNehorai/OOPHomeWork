@@ -82,6 +82,10 @@ public class Manager{
 			AlreadyExistException, CantVoteException, NotAdultException {
 		elections.lastElement().addCanadid(name, id, birthYear, ballotBoxIndex, politicalPartyIndex, primeriesPosition);
 	}
+	
+	public int getNumOfParties() {
+		return elections.lastElement().getNumOfParties();
+	}
 
 	public String showAllParties() {
 		StringBuffer str = new StringBuffer();
@@ -131,7 +135,7 @@ public class Manager{
 
 	public String getVotesInAllBallotBoxes(int index) {
         if (index < 0 || index > elections.size()) {
-			throw new IndexOutOfBoundsException();
+			throw new IndexOutOfBoundsException("the index " + index + "is not in range of " + elections.size());
 		}
 		return elections.get(index).votesInEveryBallotBox();
 	}
@@ -150,10 +154,6 @@ public class Manager{
 	public Set<Citizen> getCitizens() {
 		return elections.lastElement().getVoters();
 	}
-
-	/*public void resetVotes() {
-		elections[curretnElection].resetAllVotes();
-	}*/
 
 	public Elections getElections(int electionIndex) {
 		return elections.get(electionIndex);
@@ -217,18 +217,17 @@ public class Manager{
 	}
 	
 	public void saveAsBinaryFile(String fileAddress) throws FileNotFoundException, IOException {
-		
-		fileAddress = "D:\\Shalev\\OneDrive - Afeka College Of Engineering\\codeProjects\\OOPLessones\\HomeWork\\HW\\data.txt";
 		ObjectOutputStream outFile = new ObjectOutputStream(new FileOutputStream(fileAddress));
 		outFile.writeObject(elections);
 		outFile.close();
 	}
 	
 	public void readBinaryFile(String fileAddress) throws FileNotFoundException, IOException, ClassNotFoundException{
-		fileAddress = "D:\\Shalev\\OneDrive - Afeka College Of Engineering\\codeProjects\\OOPLessones\\HomeWork\\HW\\data.txt";
-
 		ObjectInputStream inputFile = new ObjectInputStream(new FileInputStream(fileAddress));
 		elections = (Vector<Elections>)inputFile.readObject();
 		inputFile.close();
+	}
+	public boolean isEmpty(){
+		return elections.isEmpty();
 	}
 }

@@ -35,7 +35,12 @@ public class Main {
 		if(startNewElections(manage, scan))
 			System.out.println("New elections started.");
 		else{
+			if(manage.isEmpty()){
+				System.out.println("The program is over, thank you");
+				return;
+			}
 			System.out.println("There is no new election");	
+			
 		}
 
 		int choise = -1;
@@ -90,6 +95,8 @@ public class Main {
 					System.out.println(e.getMessage());
 				} catch (AlreadyExistException e) {
 					System.out.println("Citizen already exist.");
+				} catch(ArrayIndexOutOfBoundsException e){
+					System.out.println(e.getMessage());
 				}
 
 				break;
@@ -206,25 +213,31 @@ public class Main {
 		String id = scan.next();
 		System.out.println("In what year were you born?");
 		int birthYear = scan.nextInt();
+		
 		System.out.println("In what BallotBox are you registered? type the number of the BallotBox");
-		System.out.println(manage.showAllBallotBoxes());
+		System.out.println(manage.showAllTypeBallotBoxes(BallotType.RegularCitizen));
 		int ballotBox = scan.nextInt();
+		
+		while (ballotBox < 0 || ballotBox >= manage.getNumOfBallotBoxes(BallotType.RegularCitizen)) {
+			System.out.println("Ballot box number invalid, please enter another");
+			ballotBox = scan.nextInt();	
+		}
 
-		/*
-		 * qurentined = false;
-		 * 
-		 * validAnswer = false; while (!validAnswer) { System.out.
-		 * println("Are you qurentined? \n type Y or y for YES \n type n or N for NO");
-		 * char isQurentined = scan.next().charAt(0); if (isQurentined == 'y' ||
-		 * isQurentined == 'Y') { validAnswer = true; qurentined = true; } else if
-		 * (isQurentined == 'N' || isQurentined == 'n') { validAnswer = true; qurentined
-		 * = false; } else System.out.println("Answer is not valid, try again"); }
-		 */
 		System.out.println("In what party does the canidate run for? type the number of the party");
 		System.out.println(showAllPoliticalParty(manage));
 		int party = scan.nextInt();
+		while (party < 0 ||  party >= manage.getNumOfParties()){
+			System.out.println("Party number invalid, please enter another");
+			party = scan.nextInt();
+		}
+		
+		
 		System.out.println("Where is the canidate in the priemeries?");
 		int spot = scan.nextInt() - 1;
+		while (spot < 0) {
+			System.out.println("priemeries location is not valid, must be 1 or grater");
+			spot = scan.nextInt() - 1;
+		}
 		manage.addCandid(name, id, birthYear, false, ballotBox, party, spot);
 
 	}
@@ -246,10 +259,11 @@ public class Main {
 			System.out.println("Are you qurentined? \n type Y or y for YES \n type n or N for NO");
 			char isQurentined = scan.next().charAt(0);
 			if (isQurentined == 'y' || isQurentined == 'Y') {
-				validAnswer = true;
 				qurentined = true;
 				System.out.println("How many days were you sick?");
 				numOfSickDays = scan.nextInt();
+				if(numOfSickDays >= 0)
+					validAnswer = true;
 			} else if (isQurentined == 'N' || isQurentined == 'n') {
 				validAnswer = true;
 				qurentined = false;
@@ -324,17 +338,17 @@ public class Main {
 			output.append(manage.getLastVotesInAllBallotBoxes());
 			output.append("The results of the last election:");
 			output.append(manage.getLastVotedElectionsResults());
-			return output.toString();
 		} catch (IndexOutOfBoundsException e) {
-			System.out.println(e.getMessage());
+			output.delete(0, output.length());
+			output.append("The election didn't happen\n");
 		}
-		return "";
+		return output.toString();
 	}
 
 	public static String exitMenu(Manager manage, Scanner scan) throws FileNotFoundException, IOException {
 		System.out.println("What is the address to save the data of the elections?");
 		scan.skip("[\r\n]+");
-		String address = scan.next();
+		String address = scan.nextLine();
 		
 		manage.saveAsBinaryFile(address);
 		
@@ -360,7 +374,7 @@ public class Main {
 
 	public static boolean startNewElections(Manager manage, Scanner scan) {
 		System.out.println("Start a new election? Type y or Y to start");
-		scan.skip("[\r\n]+");
+//		scan.skip("[\r\n]+");
 		boolean validAnswer = false;
 		char start = scan.next().charAt(0);
 		switch (start) {
@@ -391,7 +405,9 @@ public class Main {
 		case 'y':
 		case 'Y':
 			System.out.println("What is the address of the file?");
-			String address = scan.next();
+			scan.skip("[\r\n]+");
+			String address = scan.nextLine();
+			
 			manage.readBinaryFile(address);	
 			return true;
 		default:
