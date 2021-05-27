@@ -148,7 +148,7 @@ public class Manager{
 		if (index < 0 || index > elections.size()) {
 			throw new IndexOutOfBoundsException();
 		}
-		return elections.get(index).getDateOfElection().toString() + " : " + elections.get(index).countAllVotes();
+		return "Election at " + elections.get(index).getDateOfElection().toString() + " Results:\n" + elections.get(index).countAllVotes();
 	}
 
 	public Set<Citizen> getCitizens() {

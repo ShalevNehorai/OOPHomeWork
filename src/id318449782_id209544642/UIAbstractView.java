@@ -3,10 +3,10 @@ package id318449782_id209544642;
 import id318449782_id209544642.PoliticalParty.ePoliticalStand;
 
 public interface UIAbstractView {
-	public void addBallotBox(String address);
-	public void addCitizen(String name, String id, int birthYear) throws InvalidIdException, NullPointerException, CantVoteException;
-	public void addPoliticalParty(String name, ePoliticalStand stand);
-	public void addCandid(PoliticalParty party, int primerPosition) throws InvalidIdException, NotAdultException, AlreadyExistException, NullPointerException, CantVoteException;
+	public void addBallotBox();
+	public void addCitizen(/*String name, String id, int birthYear*/) /*throws InvalidIdException, NullPointerException, CantVoteException*/;
+	public void addPoliticalParty(/*String name, ePoliticalStand stand*/);
+	public void addCandid(/*PoliticalParty party, int primerPosition*/) /*throws InvalidIdException, NotAdultException, AlreadyExistException, NullPointerException, CantVoteException*/;
 	public String showAllBallotBox();
 	public String showAllPoliticalParty();
 	public String showAllCitizen();
