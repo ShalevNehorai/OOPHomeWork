@@ -8,8 +8,13 @@ public class Soldier extends Citizen {
 	public final static int MAX_SOLDIER_AGE = 21;
 	private boolean isCarryWeapon;
 	public Soldier(String name, String id, int birthYear, BallotBox<Soldier> ballotBox, boolean isCarryWeapon)
-			throws InvalidIdException, CantVoteException, NullPointerException {		
+			throws InvalidIdException, CantVoteException, NullPointerException, NotAdultException{		
 		super(name, id, birthYear);
+		
+		if(!isSoldierAge(birthYear)) {
+			throw NotAdultException("Not a soldier's age");
+		}
+		
 		this.isCarryWeapon = isCarryWeapon;
 		
 		if (ballotBox != null)

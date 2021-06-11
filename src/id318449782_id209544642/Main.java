@@ -242,6 +242,8 @@ public class Main implements UIAbstractView {
 			e.printStackTrace();
 		} catch (InputMismatchException e) {
 			System.out.println("Invalid input, failed to create citizen");
+		} catch (NotAdultException e) {
+			e.printStackTrace();
 		}
 
 	}
@@ -341,7 +343,7 @@ public class Main implements UIAbstractView {
 				spot = s.nextInt() - 1;
 			}
 
-			manage.addCandid(name, id, birthYear, false, ballotBox, party, spot);
+			manage.addCandid(name, id, birthYear, ballotBox, party, spot);
 			
 		} catch (NullPointerException e) {
 			e.printStackTrace();

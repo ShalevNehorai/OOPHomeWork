@@ -108,7 +108,7 @@ public class Elections implements Serializable{
 		}
 	}
 	public void addCitizen(String name, String id, int birthYear, boolean isSick, int sickDays, int ballotBoxIndex)
-	  throws InvalidIdException, NullPointerException, CantVoteException, AlreadyExistException{
+	  throws InvalidIdException, NullPointerException, CantVoteException, AlreadyExistException , NotAdultException {
 		Citizen citizen;
 		if(Soldier.isSoldierAge(birthYear)) {
 			if(isSick) {

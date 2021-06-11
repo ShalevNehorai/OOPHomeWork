@@ -73,11 +73,11 @@ public class Manager{
 	}
 
 	public void addCitizen(String name, String id, int birthYear, boolean isSick, int sickDays, int ballotBoxIndex)
-			throws InvalidIdException, NullPointerException, CantVoteException, AlreadyExistException {
+			throws InvalidIdException, NullPointerException, CantVoteException, AlreadyExistException, NotAdultException {
 		elections.lastElement().addCitizen(name, id, birthYear, isSick, sickDays, ballotBoxIndex);
 	}
 
-	public void addCandid(String name, String id, int birthYear, boolean isQurentined, int ballotBoxIndex,
+	public void addCandid(String name, String id, int birthYear, int ballotBoxIndex,
 			int politicalPartyIndex, int primeriesPosition) throws InvalidIdException, NullPointerException,
 			AlreadyExistException, CantVoteException, NotAdultException {
 		elections.lastElement().addCanadid(name, id, birthYear, ballotBoxIndex, politicalPartyIndex, primeriesPosition);
