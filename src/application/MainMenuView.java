@@ -2,10 +2,21 @@ package application;
 
 import java.util.ArrayList;
 import java.util.Date;
+<<<<<<< HEAD
 
 import javax.swing.JOptionPane;
 
 import id318449782_id209544642.BallotBox.BallotType;
+=======
+import java.util.InputMismatchException;
+import java.util.concurrent.Callable;
+
+import javax.swing.JOptionPane;
+
+import id318449782_id209544642.AlreadyExistException;
+import id318449782_id209544642.BallotBox.BallotType;
+import id318449782_id209544642.Controller;
+>>>>>>> f2b22a463ab87b742e65d6d3c7b8961891278903
 import id318449782_id209544642.PoliticalParty.ePoliticalStand;
 import id318449782_id209544642.UIAbstractView;
 import javafx.event.ActionEvent;
@@ -20,12 +31,26 @@ import javafx.stage.Stage;
 import listeners.ViewListener;
 
 public class MainMenuView implements UIAbstractView {
+<<<<<<< HEAD
 	private ArrayList<ViewListener> allListeners;
 	
 	private Stage showStage;
 
 	
 	public MainMenuView(Stage primaryStage) {
+=======
+	
+	private ArrayList<ViewListener> allListeners;
+	
+	private Stage showStage;
+	
+	private MainMenuView mainView;
+
+	
+	public MainMenuView(Stage primaryStage) {
+		mainView = this;
+		
+>>>>>>> f2b22a463ab87b742e65d6d3c7b8961891278903
 		allListeners = new ArrayList<ViewListener>();
 		
 		GridPane gpRoot = new GridPane();
@@ -39,7 +64,12 @@ public class MainMenuView implements UIAbstractView {
 			public void handle(ActionEvent action) {
 				//TODO open add view
 				
+<<<<<<< HEAD
 				new 
+=======
+				ViewAddBallotBox add = new ViewAddBallotBox(new Stage(), mainView);
+				
+>>>>>>> f2b22a463ab87b742e65d6d3c7b8961891278903
 			}
 		});
 		
@@ -140,9 +170,20 @@ public class MainMenuView implements UIAbstractView {
 
 
 	@Override
+<<<<<<< HEAD
 	public void addBallotBox() {
 		// TODO Auto-generated method stub
 		
+=======
+	public void addBallotBox(String streer, BallotType type) {
+		for (ViewListener viewListener : allListeners) {
+			try {
+				viewListener.addBallotBox(streer, type);
+			} catch (InputMismatchException | AlreadyExistException e) {
+				e.printStackTrace();
+			}
+		}
+>>>>>>> f2b22a463ab87b742e65d6d3c7b8961891278903
 	}
 
 
@@ -225,12 +266,24 @@ public class MainMenuView implements UIAbstractView {
 		}
 		return null;
 	}
+<<<<<<< HEAD
+=======
+	
+	@Override
+	public void showMsg(String msg) {
+		JOptionPane.showMessageDialog(null, msg);
+	}
+>>>>>>> f2b22a463ab87b742e65d6d3c7b8961891278903
 
 
 	@Override
 	public void exitMenu() {
 		try{
+<<<<<<< HEAD
 			//Need to add the Save Path
+=======
+			//TODO Need to add the Save Path
+>>>>>>> f2b22a463ab87b742e65d6d3c7b8961891278903
 			allListeners.get(0).save("Hello");;
 		}
 		catch(Exception e){
