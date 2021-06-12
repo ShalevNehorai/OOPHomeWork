@@ -9,6 +9,7 @@ import java.util.Scanner;
 
 import id318449782_id209544642.BallotBox.BallotType;
 import id318449782_id209544642.PoliticalParty.ePoliticalStand;
+import listeners.ViewListener;
 
 public class Main implements UIAbstractView {
 
@@ -54,7 +55,6 @@ public class Main implements UIAbstractView {
 			}
 			catch(InputMismatchException e) {
 				System.out.println("invalid input");
-//				s.nextLine();
 				choise = -1;
 			}
 			switch (choise) {
@@ -116,7 +116,6 @@ public class Main implements UIAbstractView {
 
 	public static boolean startNewElections() {
 		System.out.println("Start a new election? Type y or Y to start");
-//		scan.skip("[\r\n]+");
 		boolean validAnswer = false;
 		char start = s.next().charAt(0);
 		switch (start) {
@@ -162,6 +161,10 @@ public class Main implements UIAbstractView {
 	}
 
 	@Override
+	public void addBallotBox(String streer, BallotType type) {
+		// TODO Auto-generated method stub
+		
+	}
 	public void addBallotBox() {
 		try {
 			System.out.println("Enter the new Ballot box address");
@@ -177,7 +180,7 @@ public class Main implements UIAbstractView {
 			
 		} catch (InputMismatchException e) {
 			System.out.println("type value must be number");
-		} catch (AlreadyExistException e) {
+		} catch (Exception e) {
 			System.out.println("That ballot box is already exists");
 		}
 
@@ -437,5 +440,16 @@ public class Main implements UIAbstractView {
 		} catch (Exception e) {
 			System.out.println(e.getMessage());
 		}
+	}
+	@Override
+	public void registerListener(ViewListener listener) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void showMsg(String msg) {
+		// TODO Auto-generated method stub
+		
 	}
 }

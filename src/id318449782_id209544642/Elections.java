@@ -79,6 +79,10 @@ public class Elections implements Serializable{
 	
 	public void addBallotBox(String address, BallotType type) throws AlreadyExistException, InputMismatchException{
 		BallotBox ballotBox = null;
+		if(address.isEmpty() || type == null) {
+			throw new InputMismatchException();
+		}
+		
 		switch(type){
 			case SickCitizen:
 				ballotBox = new BallotBox<CoronaSickCitizen>(address, getNumOfParties());

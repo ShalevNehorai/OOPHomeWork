@@ -12,12 +12,17 @@ import java.util.Vector;
 
 import id318449782_id209544642.BallotBox.BallotType;
 import id318449782_id209544642.PoliticalParty.ePoliticalStand;
+import listeners.ModelListener;
 
 public class Manager{
 	Vector<Elections> elections;
-
+	private Vector<ModelListener> listeners;
+	
+	private int currentVoter = 0;
+	
 	public Manager() {
 		elections = new Vector<Elections>();
+		listeners = new Vector<ModelListener>();
 	}
 
 	public void createNewElections(LocalDate date) {        
@@ -57,31 +62,98 @@ public class Manager{
 			System.out.println(e.getMessage());
 			System.out.println();
 		}
+		fireNewElection();
 	}
-
+	
+	public void registerListener(ModelListener listener){
+		listeners.add(listener);
+	}
+	
 	public void createNewElections() {
 		createNewElections(LocalDate.now());
+		fireNewElection();
 	}
-
+	
+	private void fireNewElection(){
+		for (ModelListener listener : listeners) {
+			listener.newElection();
+		}
+		currentVoter = 0;
+	}
+	
+	public void startElection() throws CantVoteException{
+		Set<Citizen> voters =  getCitizens();
+		Citizen currentCitizen = voters.get(currentVoter);
+		if(currentCitizen != null){
+			fireStartElection();
+		}
+			
+		while(voters.get(currentVoter) != null){
+			currentCitizen = voters.get(currentVoter);
+			int voted = fireNextVoter(currentCitizen.toString());
+			currentCitizen.vote(voted);	
+			currentVoter++;
+		}
+		fireFinishElection();
+	}
+	private void fireStartElection(){
+		for (ModelListener listener : listeners) {
+			listener.modelStartElection();
+		}
+	}
+	
+	private int fireNextVoter(String citizen){
+		int partyVoted = 0;
+		for (ModelListener listener : listeners) {
+			partyVoted = listener.nextVoter(citizen);
+		}
+		return partyVoted;
+	}
+	
 	public void addParty(String partyName, ePoliticalStand partyStand, LocalDate creationDate)
 			throws AlreadyExistException {
 		elections.lastElement().addPoliticalParty(partyName, partyStand, creationDate);
+		fireAdditionData("Political Party added successfuly");
 	}
-
-	public void addBallotBox(String ballotBoxAddress, BallotType type) throws AlreadyExistException, InputMismatchException {
-		elections.lastElement().addBallotBox(ballotBoxAddress, type);
+	
+	public void addBallotBox(String ballotBoxAddress, BallotType type) {
+		String endMsg = "Error ocured";
+		try {
+			elections.lastElement().addBallotBox(ballotBoxAddress, type);
+			endMsg = "BallotBox added successfuly";
+		}
+		catch (InputMismatchException e ) {
+			endMsg = "Invalid input enterd, didnt add the ballot box";
+		}
+		catch (AlreadyExistException e) {
+			endMsg = "this ballot box allready exists, cant add another one";
+		}
+		catch (Exception e) {
+			endMsg = "some errors ocured, didnt add the ballot box";
+		}
+		finally {
+			fireAdditionData(endMsg);
+		}
 	}
 
 	public void addCitizen(String name, String id, int birthYear, boolean isSick, int sickDays, int ballotBoxIndex)
 			throws InvalidIdException, NullPointerException, CantVoteException, AlreadyExistException, NotAdultException {
 		elections.lastElement().addCitizen(name, id, birthYear, isSick, sickDays, ballotBoxIndex);
+		fireAdditionData("Citizen added successfuly");
 	}
 
 	public void addCandid(String name, String id, int birthYear, int ballotBoxIndex,
 			int politicalPartyIndex, int primeriesPosition) throws InvalidIdException, NullPointerException,
 			AlreadyExistException, CantVoteException, NotAdultException {
 		elections.lastElement().addCanadid(name, id, birthYear, ballotBoxIndex, politicalPartyIndex, primeriesPosition);
+		fireAdditionData("Candid added successfuly");
 	}
+	
+	private void fireAdditionData(String msg){
+		for (ModelListener listener : listeners) {
+			listener.modelUpdateAddSuccessfuly(msg);
+		}
+	} 
 	
 	public int getNumOfParties() {
 		return elections.lastElement().getNumOfParties();
@@ -93,7 +165,9 @@ public class Manager{
 		for (int i = 0; i < numOfParties; i++) {
 			str.append(i).append(") ").append(elections.lastElement().getParties().get(i).getName()).append("\n");
 		}
-		return str.toString();
+		String output = str.toString();
+		fireShowData(output);
+		return output;
 	}
 
 	public String showAllTypeBallotBoxes(BallotType type) {
@@ -103,26 +177,38 @@ public class Manager{
 			str.append(type.toString()).append("BallotBox - ").append(i).append(") ");
 			str.append(elections.lastElement().getBallotBoxes(type).get(i).toString()).append("\n");
 		}
-		return str.toString();
+		String output = str.toString();
+		fireShowData(output);
+		return output;
 	}
 	public Set<BallotBox<?>> getBallotBoxesByType(BallotType type){
 		return elections.lastElement().getBallotBoxes(type);
 		
 	}
 	public String showAllBallotBoxes(){
-		StringBuffer output = new StringBuffer();
+		StringBuffer str = new StringBuffer();
 		for (BallotType type : BallotType.values()) {
-			output.append(showAllTypeBallotBoxes(type));
+			str.append(showAllTypeBallotBoxes(type));
 		}
-		return output.toString();
-	}
+		String output = str.toString();
+		fireShowData(output);
+		return output;
+	}	
 
 	public String showAllCitizens() {
 		StringBuffer str = new StringBuffer();
 		for (int i = 0; i < elections.lastElement().getNumOfCitizens(); i++) {
 			str.append(i).append(") ").append(elections.lastElement().getVoters().get(i).toString()).append("\n");
 		}
-		return str.toString();
+		String output = str.toString();
+		fireShowData(output);
+		return output;
+	}
+	
+	private void fireShowData(String data){
+		for (ModelListener listener : listeners) {
+			listener.modelShowSuccessfully(data);
+		}
 	}
 	
 	public BallotBox<? extends Citizen> getBallotBox(int index, BallotType type) {
@@ -137,18 +223,30 @@ public class Manager{
         if (index < 0 || index > elections.size()) {
 			throw new IndexOutOfBoundsException("the index " + index + "is not in range of " + elections.size());
 		}
-		return elections.get(index).votesInEveryBallotBox();
+		StringBuffer str = new StringBuffer(elections.get(index).votesInEveryBallotBox());
+		String output = str.toString();
+		fireShowData(output);
+		return output;
 	}
 
 	public String getElectionsResults() {
-		return getElectionsResults(elections.size());
+		StringBuffer str = new StringBuffer(getElectionsResults(elections.size()));
+		String output = str.toString();
+		fireShowData(output);
+		return output;
 	}
 
 	public String getElectionsResults(int index) throws IndexOutOfBoundsException {
 		if (index < 0 || index > elections.size()) {
 			throw new IndexOutOfBoundsException();
 		}
-		return "Election at " + elections.get(index).getDateOfElection().toString() + " Results:\n" + elections.get(index).countAllVotes();
+		
+		StringBuffer str = new StringBuffer();
+		str.append("Election at ").append(elections.get(index).getDateOfElection().toString());
+		str.append(" Results:\n").append(elections.get(index).countAllVotes());
+		String output = str.toString();
+		fireShowData(output);
+		return output;
 	}
 
 	public Set<Citizen> getCitizens() {
@@ -165,14 +263,24 @@ public class Manager{
 
 	public void endElections() {
 		elections.lastElement().setVoteOccurred(true);
+		fireFinishElection();
 	}
-
+	
+	private void fireFinishElection(){
+		for (ModelListener listener : listeners) {
+			listener.modelFinishElections();
+		}
+	}
     public String getLastVotedElectionsResults() throws IndexOutOfBoundsException {
-        return getElectionsResults(getLastVotedElectionsIndex());
+        String output = getElectionsResults(getLastVotedElectionsIndex());
+		fireShowData(output);
+		return output;
     }
 
     public String getLastVotesInAllBallotBoxes() throws IndexOutOfBoundsException{
-        return getVotesInAllBallotBoxes(getLastVotedElectionsIndex());
+        String output = getVotesInAllBallotBoxes(getLastVotedElectionsIndex());
+		fireShowData(output);
+		return output;
     }
 
 	public int getLastVotedElectionsIndex() {
@@ -190,11 +298,13 @@ public class Manager{
 	
 	public String showBallotBoxType(){
 		int bBoxType = BallotType.values().length;
-		StringBuffer output = new StringBuffer();
+		StringBuffer str = new StringBuffer();
 		for (int i = 0; i < bBoxType; i++) {
-			output.append(i).append(" - ").append(BallotType.values()[i]).append("\n");
+			str.append(i).append(" - ").append(BallotType.values()[i]).append("\n");
 		}
-		return output.toString();
+		String output = str.toString();
+		fireShowData(output);
+		return output;
 	}
 	
 	public BallotType getBallotType(int birthYear, boolean isSick) {

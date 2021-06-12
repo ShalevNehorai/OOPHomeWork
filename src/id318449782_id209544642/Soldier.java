@@ -12,7 +12,7 @@ public class Soldier extends Citizen {
 		super(name, id, birthYear);
 		
 		if(!isSoldierAge(birthYear)) {
-			throw NotAdultException("Not a soldier's age");
+			throw new NotAdultException("Not a soldier's age");
 		}
 		
 		this.isCarryWeapon = isCarryWeapon;
