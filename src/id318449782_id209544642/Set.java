@@ -18,6 +18,9 @@ public class Set <T> implements Iterable<T>, Serializable{
 		if(contains(object)) {
 			return false;
 		}
+		if(index > vector.size()) {
+			index = vector.size();
+		}
 		vector.add(index, object);	
 		return true;
 	}

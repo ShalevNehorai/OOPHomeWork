@@ -5,7 +5,7 @@ public class CoronaSickCitizen extends Citizen implements Sickable {
 	private int numOfSickDays;
 
 	public CoronaSickCitizen(String name, String id, int birthYear, int numOfSickDays, BallotBox<CoronaSickCitizen> ballotBox)
-			throws InvalidIdException, NullPointerException, CantVoteException {
+			throws InvalidIdException, NullPointerException, CantVoteException, NotAdultException {
 		super(name, id, birthYear);
 		
 		if (ballotBox != null)

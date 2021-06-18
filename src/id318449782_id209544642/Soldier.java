@@ -26,7 +26,7 @@ public class Soldier extends Citizen {
 	}
 	
 	protected Soldier(String name, String id, int birthYear, boolean isCarryWeapon)
-			throws InvalidIdException, CantVoteException, NullPointerException {		
+			throws InvalidIdException, CantVoteException, NullPointerException, NotAdultException {		
 		super(name, id, birthYear);	
 	}
 	

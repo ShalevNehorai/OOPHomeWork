@@ -51,7 +51,7 @@ public class Elections implements Serializable{
 		addPartyToAllBoxes();
 	}
 
-	public void addPoliticalParty(String name, ePoliticalStand stand, LocalDate creationDate) throws AlreadyExistException{
+	public void addPoliticalParty(String name, ePoliticalStand stand, LocalDate creationDate) throws AlreadyExistException, InputMismatchException{
 		addPoliticalParty(new PoliticalParty(name, stand, creationDate));
 	}
 	
@@ -111,15 +111,15 @@ public class Elections implements Serializable{
 			throw new AlreadyExistException();
 		}
 	}
-	public void addCitizen(String name, String id, int birthYear, boolean isSick, int sickDays, int ballotBoxIndex)
+	public void addCitizen(String name, String id, int birthYear, boolean isSick, int sickDays, boolean isSoldier, boolean isCarryWeapon, int ballotBoxIndex)
 	  throws InvalidIdException, NullPointerException, CantVoteException, AlreadyExistException , NotAdultException {
 		Citizen citizen;
-		if(Soldier.isSoldierAge(birthYear)) {
+		if(isSoldier) {
 			if(isSick) {
-				citizen = new SickSoldier(name, id, birthYear, sickSoldierBallotBoxes.get(ballotBoxIndex), false, sickDays);//TODO change the carry weapon
+				citizen = new SickSoldier(name, id, birthYear, sickSoldierBallotBoxes.get(ballotBoxIndex), isCarryWeapon, sickDays);
 			}
 			else {				
-				citizen = new Soldier(name, id, birthYear, soldierBallotBoxes.get(ballotBoxIndex), false);//TODO change the carry weapon
+				citizen = new Soldier(name, id, birthYear, soldierBallotBoxes.get(ballotBoxIndex), isCarryWeapon);
 			}
 		}
 		else {
@@ -135,7 +135,7 @@ public class Elections implements Serializable{
 	}
 	
 	public void addCanadid(String name, String id, int birthYear, int ballotBoxIndex, int partyIndex, int primeriesPosition)
-	  throws InvalidIdException, NotAdultException, AlreadyExistException, NullPointerException, CantVoteException{
+	  throws InvalidIdException, NotAdultException, AlreadyExistException, NullPointerException, CantVoteException, ArrayIndexOutOfBoundsException{
 		if(!Soldier.isSoldierAge(birthYear)) {
 			addCitizen(new Candid(name, id, birthYear, regCitizenBallotBoxes.get(ballotBoxIndex), parties.get(partyIndex), primeriesPosition));
 		}else {

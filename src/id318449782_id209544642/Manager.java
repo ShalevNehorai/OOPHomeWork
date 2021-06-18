@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.InputMismatchException;
 import java.util.Vector;
 
@@ -43,17 +44,17 @@ public class Manager{
 			newElection.addCanadid("Noach Tovia", "153724950", 1950, 0, 1, 0);
 			newElection.addCanadid("Achinoam Noya", "498573741", 1980, 0, 1, 1);
 
-			newElection.addCanadid("Amram Devorah", "439218756", 1964, 1, 2, 0);//////
+			newElection.addCanadid("Amram Devorah", "439218756", 1964, 1, 2, 0);
 			newElection.addCanadid("Nessa Alma", "210635714", 1972, 0, 2, 1);
 
 			newElection.addCanadid("Uria Chaya", "983248513", 1949, 0, 3, 0);
 			newElection.addCanadid("Beracha Dalya", "028519635", 1956, 1, 3, 1);
 			
-			newElection.addCitizen("ilan", "421635247", 1997, false, 0, 0);
-			newElection.addCitizen("Shalev", "102642685", 1980, false, 0, 1);
-			newElection.addCitizen("Shaked", "107548653", 2001, false, 0, 0);
-			newElection.addCitizen("Moshe", "206354915", 2002, true, 15,  0);
-			newElection.addCitizen("Shlomo", "132646789", 1990, true, 1, 0);
+			newElection.addCitizen("ilan", "421635247", 1997, false, 0, false, false, 0);
+			newElection.addCitizen("Shalev", "102642685", 1980, false, 0, false, false, 1);
+			newElection.addCitizen("Shaked", "107548653", 2001, false, 0, true, true, 0);
+			newElection.addCitizen("Moshe", "206354915", 2002, true, 15,  true, false, 0);
+			newElection.addCitizen("Shlomo", "132646789", 1990, true, 1, false, false, 0);
 			
 			elections.add(newElection);
 
@@ -111,7 +112,7 @@ public class Manager{
 	}
 	
 	public void addParty(String partyName, ePoliticalStand partyStand, LocalDate creationDate)
-			throws AlreadyExistException {
+			throws AlreadyExistException, InputMismatchException {
 		elections.lastElement().addPoliticalParty(partyName, partyStand, creationDate);
 		fireAdditionData("Political Party added successfuly");
 	}
@@ -136,17 +137,53 @@ public class Manager{
 		}
 	}
 
-	public void addCitizen(String name, String id, int birthYear, boolean isSick, int sickDays, int ballotBoxIndex)
-			throws InvalidIdException, NullPointerException, CantVoteException, AlreadyExistException, NotAdultException {
-		elections.lastElement().addCitizen(name, id, birthYear, isSick, sickDays, ballotBoxIndex);
-		fireAdditionData("Citizen added successfuly");
+	public void addCitizen(String name, String id, int birthYear, boolean isSick, int sickDays, boolean isSoldier, boolean isCarryWeapon, int ballotBoxIndex) {
+		String msg = "";
+		try {
+			elections.lastElement().addCitizen(name, id, birthYear, isSick, sickDays, isSoldier, isCarryWeapon, ballotBoxIndex);
+			msg = "Citizen added successfuly";
+		} catch (NullPointerException e) {
+			msg = e.getMessage();
+		} catch (InvalidIdException e) {
+			msg = "Id must be 9 digits long";
+		} catch (CantVoteException e) {
+			msg = "the citizen cant vote in the selcted ballot box, person not added";
+		} catch (AlreadyExistException e) {
+			msg = e.getMessage() + " new citizen didnt added";
+		} catch (NotAdultException e) {
+			msg = e.getMessage() + " new citizen didnt added";
+		} catch(InputMismatchException e) {
+			msg = e.getMessage() + " new citizen didnt added";
+		}
+		finally {
+			fireAdditionData(msg);
+		}
 	}
 
 	public void addCandid(String name, String id, int birthYear, int ballotBoxIndex,
-			int politicalPartyIndex, int primeriesPosition) throws InvalidIdException, NullPointerException,
-			AlreadyExistException, CantVoteException, NotAdultException {
-		elections.lastElement().addCanadid(name, id, birthYear, ballotBoxIndex, politicalPartyIndex, primeriesPosition);
-		fireAdditionData("Candid added successfuly");
+			int politicalPartyIndex, int primeriesPosition) {
+		String msg = "";
+		try {
+			elections.lastElement().addCanadid(name, id, birthYear, ballotBoxIndex, politicalPartyIndex, primeriesPosition);
+			msg = "Candid added successfuly";
+		} catch (NullPointerException e) {
+			msg = e.getMessage();
+		} catch (InvalidIdException e) {
+			msg = "Id must be 9 digits long";
+		} catch (NotAdultException e) {
+			msg = e.getMessage() + " new candid didnt added";
+		} catch (AlreadyExistException e) {
+			msg = e.getMessage() + " new candid didnt added";
+		} catch (CantVoteException e) {
+			msg = "the citizen cant vote in the selcted ballot box, candid not added";
+		} catch(ArrayIndexOutOfBoundsException e) {
+			msg = "primaris position cant be negative or empty, didnt add candid";
+		} catch(InputMismatchException e) {
+			msg = e.getMessage();
+		}
+		finally {
+			fireAdditionData(msg);
+		}
 	}
 	
 	private void fireAdditionData(String msg){
@@ -159,7 +196,7 @@ public class Manager{
 		return elections.lastElement().getNumOfParties();
 	}
 
-	public String showAllParties() {
+	/*public String showAllParties() {
 		StringBuffer str = new StringBuffer();
 		int numOfParties = elections.lastElement().getNumOfParties();
 		for (int i = 0; i < numOfParties; i++) {
@@ -168,9 +205,26 @@ public class Manager{
 		String output = str.toString();
 		fireShowData(output);
 		return output;
+	}*/
+	
+	public ArrayList<String> getAllParties(){
+		ArrayList<String> list = new ArrayList<String>();
+		Set<PoliticalParty> parties = elections.lastElement().getParties();
+		for (PoliticalParty party : parties) {
+			list.add(party.toString());
+		}
+		return list;
 	}
-
-	public String showAllTypeBallotBoxes(BallotType type) {
+	
+	public ArrayList<String> getPartyNames(){
+		ArrayList<String> list = new ArrayList<String>();
+		Set<PoliticalParty> parties = elections.lastElement().getParties();
+		for (PoliticalParty party : parties) {
+			list.add(party.getName());
+		}
+		return list;
+	}
+	/*public String showAllTypeBallotBoxes(BallotType type) {
 		StringBuffer str = new StringBuffer();
 		int numOfBallotBoxes = elections.lastElement().getNumOfTypeBallotBox(type);
 		for (int i = 0; i < numOfBallotBoxes; i++) {
@@ -180,12 +234,20 @@ public class Manager{
 		String output = str.toString();
 		fireShowData(output);
 		return output;
+	}*/
+	public ArrayList<String> getBallotBoxes(BallotType type){
+		ArrayList<String> list = new ArrayList<String>();
+		Set<BallotBox<?>> ballots = elections.lastElement().getBallotBoxes(type);
+		for (BallotBox<?> ballotBox : ballots) {
+			list.add(type.toString() + " " + ballotBox.toString());
+		}
+		return list;
 	}
 	public Set<BallotBox<?>> getBallotBoxesByType(BallotType type){
 		return elections.lastElement().getBallotBoxes(type);
 		
 	}
-	public String showAllBallotBoxes(){
+	/*public String showAllBallotBoxes(){
 		StringBuffer str = new StringBuffer();
 		for (BallotType type : BallotType.values()) {
 			str.append(showAllTypeBallotBoxes(type));
@@ -193,9 +255,19 @@ public class Manager{
 		String output = str.toString();
 		fireShowData(output);
 		return output;
-	}	
+	}*/	
+	
+	public ArrayList<String> getAllBallotBoxes(){
+		ArrayList<String> list = new ArrayList<String>();
+		for (BallotType type : BallotType.values()) {
+			for(String ballot : getBallotBoxes(type)) {
+				list.add(ballot);
+			}
+		}
+		return list;
+	}
 
-	public String showAllCitizens() {
+	/*public String showAllCitizens() {
 		StringBuffer str = new StringBuffer();
 		for (int i = 0; i < elections.lastElement().getNumOfCitizens(); i++) {
 			str.append(i).append(") ").append(elections.lastElement().getVoters().get(i).toString()).append("\n");
@@ -203,6 +275,15 @@ public class Manager{
 		String output = str.toString();
 		fireShowData(output);
 		return output;
+	}*/
+	
+	public ArrayList<String> getAllCitizens(){
+		ArrayList<String> list = new ArrayList<String>();
+		Set<Citizen> citizens = elections.lastElement().getVoters();
+		for (Citizen citizen : citizens) {
+			list.add(citizen.toString());
+		}
+		return list;
 	}
 	
 	private void fireShowData(String data){
@@ -309,6 +390,25 @@ public class Manager{
 	
 	public BallotType getBallotType(int birthYear, boolean isSick) {
 		if(Soldier.isSoldierAge(birthYear)) {
+			if(isSick) {
+				return BallotType.SickSoldier;
+			}
+			else {
+				return BallotType.Soldier;
+			}
+		}
+		else {
+			if(isSick) {
+				return BallotType.SickCitizen;
+			}
+			else {
+				return BallotType.RegularCitizen;
+			}
+		}
+	}
+	
+	public BallotType getBallotType(boolean isSoldier, boolean isSick) {
+		if(isSoldier) {
 			if(isSick) {
 				return BallotType.SickSoldier;
 			}

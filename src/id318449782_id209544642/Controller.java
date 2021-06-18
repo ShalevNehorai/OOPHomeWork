@@ -1,5 +1,6 @@
 package id318449782_id209544642;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.InputMismatchException;
@@ -31,41 +32,38 @@ public class Controller
 	@Override
 	public void addCitizen(String name, String id, int birthYear, boolean isSick, int sickDays, boolean isSoldier,
 			boolean carryWeapon, int ballotBoxIndex) {
-		// TODO Auto-generated method stub
+		theModel.addCitizen(name, id, birthYear, isSick, sickDays, isSoldier, carryWeapon, ballotBoxIndex);
 		
 	}
 
 	@Override
-	public void addPoliticalParty(String name, ePoliticalStand stand, Date creationDate) {
-		// TODO Auto-generated method stub
-		
+	public void addPoliticalParty(String name, ePoliticalStand stand, LocalDate creationDate) throws AlreadyExistException, InputMismatchException {
+		theModel.addParty(name, stand, creationDate);
 	}
 
 	@Override
-	public void addCanadid(String name, String id, int birthYear, int partyIndex, int primeriesPosition) {
-		// TODO Auto-generated method stub
-		
+	public void addCanadid(String name, String id, int birthYear, int ballotBoxIndex, int partyIndex, int primeriesPosition) {
+		theModel.addCandid(name, id, birthYear, ballotBoxIndex, partyIndex, primeriesPosition);
 	}
 	
 	@Override
-	public String askAllBallotBoxes() {
-		return theModel.showAllBallotBoxes();
+	public ArrayList<String> askAllBallotBoxes() {
+		return theModel.getAllBallotBoxes();
 	}
 
 	@Override
-	public String askBallotBoxList(BallotType ballotBoxType) {
-		 theModel.getBallotBoxesByType(ballotBoxType);
-		 return null;
+	public ArrayList<String> askBallotBoxList(BallotType ballotBoxType) {
+		 return theModel.getBallotBoxes(ballotBoxType);
 	}
 
 	@Override
-	public String askPoliticalPartyList() {
-		return theModel.showAllParties();
+	public ArrayList<String> askPoliticalPartyList() {
+		return theModel.getAllParties();
 	}
 
 	@Override
-	public String askCitizenList() {
-		return theModel.showAllCitizens();
+	public ArrayList<String> askCitizenList() {
+		return theModel.getAllCitizens();
 	}
 
 	@Override
@@ -137,6 +135,16 @@ public class Controller
 	public void modelShowSuccessfully(String data) {
 		// TODO Auto-generated method stub
 		
+	}
+
+	@Override
+	public BallotType askBallotType(boolean isSoldier, boolean isSick) {
+		return theModel.getBallotType(isSoldier, isSick);
+	}
+
+	@Override
+	public ArrayList<String> askPartyNames() {
+		return theModel.getPartyNames();
 	}
 
 	

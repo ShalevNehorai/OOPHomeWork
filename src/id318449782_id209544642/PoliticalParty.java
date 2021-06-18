@@ -3,6 +3,7 @@ package id318449782_id209544642;
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.InputMismatchException;
 
 public class PoliticalParty implements Serializable{
 
@@ -15,9 +16,13 @@ public class PoliticalParty implements Serializable{
 	private Set<Candid> canidates;
 	private ePoliticalStand partyStand;
 
-	public PoliticalParty(String partyName, ePoliticalStand partyStand, LocalDate creationDate, Set<Candid> canidates) {
+	public PoliticalParty(String partyName, ePoliticalStand partyStand, LocalDate creationDate, Set<Candid> canidates) throws InputMismatchException {
 		this.name = partyName;
 		this.partyStand = partyStand;
+		if(partyName.isEmpty()) {
+			throw new InputMismatchException("party name cant be empty");
+		}
+		
 		if(canidates != null){
 			this.canidates = canidates;
 		}
@@ -26,10 +31,10 @@ public class PoliticalParty implements Serializable{
 		}
 		this.partyCreation = creationDate;
 	}
-	public PoliticalParty(String partyName, ePoliticalStand partyStand, LocalDate creationDate) {
+	public PoliticalParty(String partyName, ePoliticalStand partyStand, LocalDate creationDate) throws InputMismatchException {
 		this(partyName, partyStand, creationDate, null);
 	}
-	public PoliticalParty(String partyName, ePoliticalStand partyStand) {
+	public PoliticalParty(String partyName, ePoliticalStand partyStand) throws InputMismatchException {
 		this(partyName, partyStand, LocalDate.now(), null);
 	}
 	

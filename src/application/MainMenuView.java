@@ -1,75 +1,63 @@
 package application;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Date;
-<<<<<<< HEAD
-
-import javax.swing.JOptionPane;
-
-import id318449782_id209544642.BallotBox.BallotType;
-=======
 import java.util.InputMismatchException;
 import java.util.concurrent.Callable;
 
 import javax.swing.JOptionPane;
 
 import id318449782_id209544642.AlreadyExistException;
+import id318449782_id209544642.CantVoteException;
 import id318449782_id209544642.BallotBox.BallotType;
 import id318449782_id209544642.Controller;
->>>>>>> f2b22a463ab87b742e65d6d3c7b8961891278903
+import id318449782_id209544642.InvalidIdException;
 import id318449782_id209544642.PoliticalParty.ePoliticalStand;
 import id318449782_id209544642.UIAbstractView;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
+import javafx.print.Collation;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.TextArea;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
 import listeners.ViewListener;
 
 public class MainMenuView implements UIAbstractView {
-<<<<<<< HEAD
-	private ArrayList<ViewListener> allListeners;
-	
-	private Stage showStage;
-
-	
-	public MainMenuView(Stage primaryStage) {
-=======
-	
 	private ArrayList<ViewListener> allListeners;
 	
 	private Stage showStage;
 	
 	private MainMenuView mainView;
+	
+	private GridPane addGrid;
 
 	
 	public MainMenuView(Stage primaryStage) {
-		mainView = this;
+		mainView = this;		
 		
->>>>>>> f2b22a463ab87b742e65d6d3c7b8961891278903
 		allListeners = new ArrayList<ViewListener>();
-		
+				
 		GridPane gpRoot = new GridPane();
 		gpRoot.setPadding(new Insets(10));
 		gpRoot.setHgap(10);
 		gpRoot.setVgap(10);
 		
+		initAddingGrid();
+		hideAll();
+		
 		Button btnAdding = new Button("Adding Options");
 		btnAdding.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
-			public void handle(ActionEvent action) {
-				//TODO open add view
-				
-<<<<<<< HEAD
-				new 
-=======
-				ViewAddBallotBox add = new ViewAddBallotBox(new Stage(), mainView);
-				
->>>>>>> f2b22a463ab87b742e65d6d3c7b8961891278903
+			public void handle(ActionEvent action) {				
+				hideAll();
+				addGrid.setVisible(true);
 			}
 		});
 		
@@ -106,7 +94,7 @@ public class MainMenuView implements UIAbstractView {
 						showStage.close();
 					}
 				});		
-				
+								
 				GridPane showGrid = new GridPane();
 				showGrid.setPadding(new Insets(10));
 				showGrid.setHgap(10);
@@ -157,9 +145,61 @@ public class MainMenuView implements UIAbstractView {
 
 		gpRoot.add(btnQuit, 1, 4);
 		
-		Scene scene = new Scene(gpRoot, 500, 300);
+		HBox layout = new HBox();
+		layout.getChildren().addAll(gpRoot, addGrid);
+		
+		Scene scene = new Scene(layout, 500, 300);
 		primaryStage.setScene(scene);
 		primaryStage.show();
+	}
+	
+	private void initAddingGrid() {
+		addGrid = new GridPane();
+		addGrid.setPadding(new Insets(10));
+		addGrid.setHgap(10);
+		addGrid.setVgap(10);
+		
+		Button btnAddCitizen = new Button("Add Citizen");
+		btnAddCitizen.setOnAction(new EventHandler<ActionEvent>() {
+			@Override
+			public void handle(ActionEvent arg0) {
+				ViewAddCitizen add = new ViewAddCitizen(new Stage(), mainView);
+			}
+		});
+
+		Button btnAddCandid = new Button("Add Candid");
+		btnAddCandid.setOnAction(new EventHandler<ActionEvent>() {
+			@Override
+			public void handle(ActionEvent arg0) {
+				ViewAddCanadid add = new ViewAddCanadid(new Stage(), mainView);
+			}
+		});
+
+		Button btnAddBallotBox = new Button("Add Ballot Box");
+		btnAddBallotBox.setOnAction(new EventHandler<ActionEvent>() {
+			@Override
+			public void handle(ActionEvent arg0) {
+				ViewAddBallotBox add = new ViewAddBallotBox(new Stage(), mainView);
+			}
+		});
+		
+
+		Button btnAddParty = new Button("Add Party");
+		btnAddParty.setOnAction(new EventHandler<ActionEvent>() {
+			@Override
+			public void handle(ActionEvent arg0) {
+				ViewAddPoliticalParty add = new ViewAddPoliticalParty(new Stage(), mainView);
+			}
+		});
+		
+		addGrid.add(btnAddCitizen, 0, 0);
+		addGrid.add(btnAddCandid, 0, 1);
+		addGrid.add(btnAddBallotBox, 0, 2);
+		addGrid.add(btnAddParty, 0, 3);
+	}
+	
+	private void hideAll() {
+		addGrid.setVisible(false);
 	}
 
 
@@ -168,13 +208,7 @@ public class MainMenuView implements UIAbstractView {
 		allListeners.add(listener);
 	}
 
-
 	@Override
-<<<<<<< HEAD
-	public void addBallotBox() {
-		// TODO Auto-generated method stub
-		
-=======
 	public void addBallotBox(String streer, BallotType type) {
 		for (ViewListener viewListener : allListeners) {
 			try {
@@ -183,36 +217,48 @@ public class MainMenuView implements UIAbstractView {
 				e.printStackTrace();
 			}
 		}
->>>>>>> f2b22a463ab87b742e65d6d3c7b8961891278903
 	}
 
 
 	@Override
-	public void addCitizen() {
-		// TODO Auto-generated method stub
+	public void addCitizen(String name, String id, int birthYear, boolean isSick, int sickDays, boolean isSoldier, boolean carryWeapon, int ballotBoxIndex) {
+		for (ViewListener viewListener : allListeners) {
+			viewListener.addCitizen(name, id, birthYear, isSick, sickDays, isSoldier, carryWeapon, ballotBoxIndex);
+		}
 		
 	}
 
 
 	@Override
-	public void addPoliticalParty() {
-		// TODO Auto-generated method stub
+	public void addPoliticalParty(String name, ePoliticalStand stand, LocalDate creationDate) {
+		for (ViewListener viewListener : allListeners) {
+			try {
+				viewListener.addPoliticalParty(name, stand, creationDate);
+			} catch (InputMismatchException | AlreadyExistException e) {
+				showMsg(e.getMessage());
+			}
+		}
 		
 	}
 
 
 	@Override
-	public void addCandid() {
-		// TODO Auto-generated method stub
-		
+	public void addCandid(String name, String id, int birthYear, int ballotBoxIndex, int partyIndex, int primeriesPosition) {
+		for (ViewListener viewListener : allListeners) {
+			viewListener.addCanadid(name, id, birthYear, ballotBoxIndex, partyIndex, primeriesPosition);
+		}
 	}
 
 
 	@Override
 	public String showAllBallotBox() {
 		try {
-			String citizen = allListeners.get(0).askAllBallotBoxes();
-			JOptionPane.showMessageDialog(null, citizen);
+			ArrayList<String> ballotBoxes = allListeners.get(0).askAllBallotBoxes();
+			StringBuilder sb = new StringBuilder();
+			for (String string : ballotBoxes) {
+				sb.append(string).append("\n");
+			}
+			JOptionPane.showMessageDialog(null, sb);
 		}catch (IndexOutOfBoundsException e) {
 			System.out.println("no listeners register");
 		}
@@ -223,9 +269,12 @@ public class MainMenuView implements UIAbstractView {
 	@Override
 	public String showAllPoliticalParty() {
 		try {
-			String citizen = allListeners.get(0).askPoliticalPartyList();
-			
-			JOptionPane.showMessageDialog(null, citizen);
+			ArrayList<String> parties = allListeners.get(0).askPoliticalPartyList();
+			StringBuilder sb = new StringBuilder();
+			for (String string : parties) {
+				sb.append(string).append("\n");
+			}
+			JOptionPane.showMessageDialog(null, sb);
 		}catch (IndexOutOfBoundsException e) {
 			System.out.println("no listeners register");
 		}
@@ -236,9 +285,12 @@ public class MainMenuView implements UIAbstractView {
 	@Override
 	public String showAllCitizen() {
 		try {
-			String citizen = allListeners.get(0).askCitizenList();
-			
-			JOptionPane.showMessageDialog(null, citizen);
+			ArrayList<String> citizens = allListeners.get(0).askCitizenList();
+			StringBuilder sb = new StringBuilder();
+			for (String string : citizens) {
+				sb.append(string).append("\n");
+			}
+			JOptionPane.showMessageDialog(null, sb);
 		}catch (IndexOutOfBoundsException e) {
 			System.out.println("no listeners register");
 		}
@@ -266,30 +318,39 @@ public class MainMenuView implements UIAbstractView {
 		}
 		return null;
 	}
-<<<<<<< HEAD
-=======
+	
+	public ArrayList<String> getBallotBoxes(BallotType type){
+		return allListeners.get(0).askBallotBoxList(type);
+	}
+	
+	public ArrayList<String> getParties(){
+		return allListeners.get(0).askPoliticalPartyList();
+	}
+
+	@Override
+	public BallotType getBallotType(boolean isSoldier, boolean isSick) {
+		return allListeners.get(0).askBallotType(isSoldier, isSick);
+	}
 	
 	@Override
 	public void showMsg(String msg) {
 		JOptionPane.showMessageDialog(null, msg);
 	}
->>>>>>> f2b22a463ab87b742e65d6d3c7b8961891278903
-
 
 	@Override
 	public void exitMenu() {
 		try{
-<<<<<<< HEAD
-			//Need to add the Save Path
-=======
 			//TODO Need to add the Save Path
->>>>>>> f2b22a463ab87b742e65d6d3c7b8961891278903
 			allListeners.get(0).save("Hello");;
 		}
 		catch(Exception e){
 			
 		}
 		
+	}
+
+	public ArrayList<String> getPartyNameList(){
+		return allListeners.get(0).askPartyNames();
 	}
 
 }

@@ -5,7 +5,7 @@ public class SickSoldier extends Soldier implements Sickable {
 	private int sickDays;
 
 	public SickSoldier(String name, String id, int birthYear, BallotBox<SickSoldier> ballotBox, boolean isCarryWeapon, int sickDays)
-			throws InvalidIdException, CantVoteException, NullPointerException {
+			throws InvalidIdException, CantVoteException, NullPointerException, NotAdultException {
 		super(name, id, birthYear, isCarryWeapon);
 		
 		if (ballotBox != null)

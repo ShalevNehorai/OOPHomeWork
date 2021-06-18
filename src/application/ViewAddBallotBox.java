@@ -69,8 +69,6 @@ public class ViewAddBallotBox {
 	
 	public void addBallotBox() {
 		String street = tfStreen.getText();
-		
-		
 		BallotType type = BallotType.valueOf(typeCmb.getValue());
 		
 		mainView.addBallotBox(street, type);

@@ -1,5 +1,7 @@
 package listeners;
 
+import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.InputMismatchException;
 
@@ -12,14 +14,14 @@ public interface ViewListener {
 	//Add
 	void addBallotBox(String street, BallotType type) throws InputMismatchException, AlreadyExistException ;
 	void addCitizen(String name, String id, int birthYear, boolean isSick, int sickDays, boolean isSoldier, boolean carryWeapon, int ballotBoxIndex);
-	void addPoliticalParty(String name, ePoliticalStand stand, Date creationDate);
-	void addCanadid(String name, String id, int birthYear, int partyIndex, int primeriesPosition);
+	void addPoliticalParty(String name, ePoliticalStand stand, LocalDate creationDate) throws AlreadyExistException, InputMismatchException;
+	void addCanadid(String name, String id, int birthYear, int ballotBoxIndex, int partyIndex, int primeriesPosition);
 	
 	//Show
-	String askAllBallotBoxes();
-	String askBallotBoxList(BallotType ballotBoxType);
-	String askPoliticalPartyList();
-	String askCitizenList();
+	ArrayList<String> askAllBallotBoxes();
+	ArrayList<String> askBallotBoxList(BallotType ballotBoxType);
+	ArrayList<String> askPoliticalPartyList();
+	ArrayList<String> askCitizenList();
 	String askElectionResult();
 	
 	//Elections
@@ -30,4 +32,7 @@ public interface ViewListener {
 	//Save
 	void save(String filePath);
 	void load(String filePath);
+	
+	BallotType askBallotType(boolean isSoldier, boolean isSick);
+	ArrayList<String> askPartyNames();
 }

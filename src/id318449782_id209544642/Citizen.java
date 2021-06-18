@@ -2,6 +2,7 @@ package id318449782_id209544642;
 
 import java.io.Serializable;
 import java.time.LocalDate;
+import java.util.InputMismatchException;
 
 public abstract class Citizen implements Serializable {
 	private String name;
@@ -10,9 +11,15 @@ public abstract class Citizen implements Serializable {
 	protected BallotBox ballotBox;
 
 	public Citizen(String name, String id, int birthYear)
-			throws InvalidIdException, NullPointerException, CantVoteException {
+			throws InvalidIdException, NullPointerException, CantVoteException, NotAdultException, InputMismatchException {
+		if(name.isEmpty()) {
+			throw new InputMismatchException("name cant be empty");
+		}
 		this.name = name;
 		setId(id);
+		if(birthYear < 0) {
+			throw new NotAdultException();
+		}
 		this.birthYear = birthYear;
 	}
 
