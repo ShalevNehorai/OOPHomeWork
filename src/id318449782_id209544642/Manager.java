@@ -21,6 +21,8 @@ public class Manager{
 	
 	private int currentVoter = 0;
 	
+	private final String filePath = "data";
+	
 	public Manager() {
 		elections = new Vector<Elections>();
 		listeners = new Vector<ModelListener>();
@@ -63,7 +65,8 @@ public class Manager{
 			System.out.println(e.getMessage());
 			System.out.println();
 		}
-		fireNewElection();
+		
+		fireNewElectionCreated();
 	}
 	
 	public void registerListener(ModelListener listener){
@@ -72,17 +75,16 @@ public class Manager{
 	
 	public void createNewElections() {
 		createNewElections(LocalDate.now());
-		fireNewElection();
 	}
 	
-	private void fireNewElection(){
+	private void fireNewElectionCreated(){
 		for (ModelListener listener : listeners) {
-			listener.newElection();
+			listener.newElectionCreated();
 		}
 		currentVoter = 0;
 	}
 	
-	public void startElection() throws CantVoteException{
+	/*public void startElection() throws CantVoteException{
 		Set<Citizen> voters =  getCitizens();
 		Citizen currentCitizen = voters.get(currentVoter);
 		if(currentCitizen != null){
@@ -91,24 +93,68 @@ public class Manager{
 			
 		while(voters.get(currentVoter) != null){
 			currentCitizen = voters.get(currentVoter);
+			
 			int voted = fireNextVoter(currentCitizen.toString());
+			
 			currentCitizen.vote(voted);	
 			currentVoter++;
 		}
 		fireFinishElection();
+	}*/
+	
+	public boolean isElectionOccured(){
+		return elections.lastElement().isVoteOccurred();
 	}
-	private void fireStartElection(){
-		for (ModelListener listener : listeners) {
-			listener.modelStartElection();
+	
+	public void startElection(){
+		if(isElectionOccured()) {
+			fireShowData("voting already occured, need to create new election");
+			return;
+		}
+		
+		currentVoter = 0;
+		if(currentVoter < getCitizens().size()) {			
+			Citizen firstVoter = getCitizens().get(currentVoter);
+			firstVoter = getCitizens().get(currentVoter);
+			fireStartElection(firstVoter.getName());
+		}
+		else {
+			endElections();		
 		}
 	}
 	
-	private int fireNextVoter(String citizen){
-		int partyVoted = 0;
+	private void fireStartElection(String firstVoter){
 		for (ModelListener listener : listeners) {
-			partyVoted = listener.nextVoter(citizen);
+			listener.modelStartElection(firstVoter);
 		}
-		return partyVoted;
+	}
+	
+	public void nextVoter(String lastVotedParty){
+		int lastVote = getPartyNames().indexOf(lastVotedParty);
+		Citizen voter = getCitizens().get(currentVoter);
+		try{
+			voter.vote(lastVote);
+		}
+		catch(Exception e){
+			//TODO see later
+			e.printStackTrace();
+		}
+		
+		currentVoter++;
+		
+		if(currentVoter < getCitizens().size()) {			
+			voter = getCitizens().get(currentVoter);
+			fireNextVoter(voter.getName());
+		}
+		else {
+			endElections();			
+		}
+	}
+	
+	private void fireNextVoter(String citizen){
+		for (ModelListener listener : listeners) {
+			listener.modelNextVoter(citizen);
+		}
 	}
 	
 	public void addParty(String partyName, ePoliticalStand partyStand, LocalDate creationDate)
@@ -306,19 +352,24 @@ public class Manager{
 		}
 		StringBuffer str = new StringBuffer(elections.get(index).votesInEveryBallotBox());
 		String output = str.toString();
-		fireShowData(output);
 		return output;
 	}
 
 	public String getElectionsResults() {
-		StringBuffer str = new StringBuffer(getElectionsResults(elections.size()));
-		String output = str.toString();
-		fireShowData(output);
-		return output;
+		StringBuffer output = new StringBuffer();
+		
+		if(elections.lastElement().isVoteOccurred()) {
+			output.append("The result of the last elections in each BallotBox:\n");
+			output.append(getLastVotesInAllBallotBoxes());
+			output.append(getLastVotedElectionsResults());
+			
+			return output.toString();
+		}
+		return "votes didnt happen to current elections";
 	}
 
 	public String getElectionsResults(int index) throws IndexOutOfBoundsException {
-		if (index < 0 || index > elections.size()) {
+		if (index < 0 || index >= elections.size()) {
 			throw new IndexOutOfBoundsException();
 		}
 		
@@ -326,7 +377,6 @@ public class Manager{
 		str.append("Election at ").append(elections.get(index).getDateOfElection().toString());
 		str.append(" Results:\n").append(elections.get(index).countAllVotes());
 		String output = str.toString();
-		fireShowData(output);
 		return output;
 	}
 
@@ -354,13 +404,11 @@ public class Manager{
 	}
     public String getLastVotedElectionsResults() throws IndexOutOfBoundsException {
         String output = getElectionsResults(getLastVotedElectionsIndex());
-		fireShowData(output);
 		return output;
     }
 
     public String getLastVotesInAllBallotBoxes() throws IndexOutOfBoundsException{
         String output = getVotesInAllBallotBoxes(getLastVotedElectionsIndex());
-		fireShowData(output);
 		return output;
     }
 
@@ -426,17 +474,34 @@ public class Manager{
 		}
 	}
 	
-	public void saveAsBinaryFile(String fileAddress) throws FileNotFoundException, IOException {
-		ObjectOutputStream outFile = new ObjectOutputStream(new FileOutputStream(fileAddress));
-		outFile.writeObject(elections);
-		outFile.close();
+	public void saveAsBinaryFile() {
+		try {
+			String filePath = "data";
+			ObjectOutputStream outFile = new ObjectOutputStream(new FileOutputStream(filePath));
+			outFile.writeObject(elections);
+			outFile.close();
+		}
+		catch(FileNotFoundException e) {
+			fireShowData("data file not found");
+		}
+		catch (IOException e) {
+			fireShowData("data file not found");
+		}
+		
 	}
 	
-	public void readBinaryFile(String fileAddress) throws FileNotFoundException, IOException, ClassNotFoundException{
-		ObjectInputStream inputFile = new ObjectInputStream(new FileInputStream(fileAddress));
-		elections = (Vector<Elections>)inputFile.readObject();
-		inputFile.close();
+	public void readBinaryFile() {
+			ObjectInputStream inputFile;
+			try {
+				inputFile = new ObjectInputStream(new FileInputStream(filePath));
+				elections = (Vector<Elections>)inputFile.readObject();
+				inputFile.close();
+			} catch (IOException | ClassNotFoundException e) {
+				fireShowData("data file not found. fail loading data");
+
+			}	
 	}
+	
 	public boolean isEmpty(){
 		return elections.isEmpty();
 	}

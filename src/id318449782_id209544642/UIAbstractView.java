@@ -15,9 +15,15 @@ public interface UIAbstractView {
 	public String showAllBallotBox();
 	public String showAllPoliticalParty();
 	public String showAllCitizen();
-	public void startElection();
+	public void viewAskToStartElection();
+	public void viewAskToCreateElection(LocalDate date);
+	public void electionCreated();
+	public void viewVote(String VoteParty);
+	public void nextVoter(String voterName);
+	public void endElection();
 	public String showElectionResult();
 	public BallotType getBallotType(boolean isSoldier, boolean isSick);
 	public void showMsg(String msg);
+	public void loadData();
 	public void exitMenu();	
 }

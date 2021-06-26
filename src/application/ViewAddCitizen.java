@@ -55,7 +55,7 @@ public class ViewAddCitizen {
 		tfBirthYear = new TextField();
 		setTextFieldNumbersOnly(tfBirthYear);
 		
-		Label sickLbl = new Label("Is Seak? ");
+		Label sickLbl = new Label("Is Sick? ");
 		sickBox = new CheckBox();
 		tfSickDays = new TextField();
 		tfSickDays.setVisible(false);

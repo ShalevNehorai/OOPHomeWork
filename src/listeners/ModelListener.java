@@ -2,9 +2,9 @@ package listeners;
 
 public interface ModelListener {
 	void modelUpdateAddSuccessfuly(String msg);
-	void modelStartElection();
+	void modelStartElection(String firstVoter);
 	void modelFinishElections();
-	int nextVoter(String citizen);
-	void newElection();
+	void modelNextVoter(String citizen);
+	void newElectionCreated();
 	void modelShowSuccessfully(String data);
 }

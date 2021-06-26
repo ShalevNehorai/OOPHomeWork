@@ -26,12 +26,13 @@ public interface ViewListener {
 	
 	//Elections
 	void viewStartElections();
-	void vote(int politicalPartyIndex);
-	void viewNewElection();
+	void vote(String politicalParty);
+	void viewCreateElection(LocalDate date);
+	boolean viewAskElectionOccured();
 	
 	//Save
-	void save(String filePath);
-	void load(String filePath);
+	void save();
+	void load();
 	
 	BallotType askBallotType(boolean isSoldier, boolean isSick);
 	ArrayList<String> askPartyNames();

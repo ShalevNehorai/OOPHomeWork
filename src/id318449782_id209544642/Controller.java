@@ -2,7 +2,6 @@ package id318449782_id209544642;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.InputMismatchException;
 
 import id318449782_id209544642.BallotBox.BallotType;
@@ -68,73 +67,65 @@ public class Controller
 
 	@Override
 	public String askElectionResult() {
-		// TODO Auto-generated method stub
-		return null;
+		return theModel.getElectionsResults();
 	}
 
 	@Override
 	public void viewStartElections() {
-		// TODO Auto-generated method stub
-		
+		theModel.startElection();
 	}
 
 	@Override
-	public void vote(int politicalPartyIndex) {
-		// TODO Auto-generated method stub
-		
+	public void vote(String politicalParty) {
+		theModel.nextVoter(politicalParty);
 	}
 
 	@Override
-	public void viewNewElection() {
-		// TODO Auto-generated method stub
-		
+	public void viewCreateElection(LocalDate date) {
+		theModel.createNewElections(date);
 	}
 
 	@Override
-	public void save(String filePath) {
-		// TODO Auto-generated method stub
-		
+	public void save() {
+		theModel.saveAsBinaryFile();
 	}
 
 	@Override
-	public void load(String filePath) {
-		// TODO Auto-generated method stub
-		
+	public void load() {
+		theModel.readBinaryFile();
 	}
-
+	
 	@Override
 	public void modelUpdateAddSuccessfuly(String msg) {
 		theView.showMsg(msg);
 	}
 
 	@Override
-	public void modelStartElection() {
-		// TODO Auto-generated method stub
-		
+	public void modelStartElection(String firstVoter) {
+		theView.nextVoter(firstVoter);	
 	}
 
 	@Override
 	public void modelFinishElections() {
 		// TODO Auto-generated method stub
-		
+		theView.endElection();
 	}
 
 	@Override
-	public int nextVoter(String citizen) {
-		// TODO Auto-generated method stub
-		return 0;
+	public void modelNextVoter(String citizen) {
+		theView.nextVoter(citizen);
 	}
 
 	@Override
-	public void newElection() {
+	public void newElectionCreated() {
 		// TODO Auto-generated method stub
-		
+		theView.electionCreated();
 	}
 
 	@Override
 	public void modelShowSuccessfully(String data) {
 		// TODO Auto-generated method stub
-		
+		theView.showMsg(data);
 	}
 
 	@Override
@@ -146,7 +137,11 @@ public class Controller
 	public ArrayList<String> askPartyNames() {
 		return theModel.getPartyNames();
 	}
-
 	
+	@Override
+	public boolean viewAskElectionOccured() {
+		// TODO Auto-generated method stub
+		return theModel.isElectionOccured();
+	}
 
 }
