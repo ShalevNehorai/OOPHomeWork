@@ -4,7 +4,6 @@ import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.InputMismatchException;
 import java.util.Iterator;
-import java.util.Vector;
 
 import id318449782_id209544642.BallotBox.BallotType;
 import id318449782_id209544642.PoliticalParty.ePoliticalStand;

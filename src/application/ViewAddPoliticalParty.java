@@ -2,7 +2,6 @@ package application;
 
 import java.time.LocalDate;
 
-import id318449782_id209544642.BallotBox.BallotType;
 import id318449782_id209544642.PoliticalParty;
 import id318449782_id209544642.PoliticalParty.ePoliticalStand;
 import javafx.event.ActionEvent;

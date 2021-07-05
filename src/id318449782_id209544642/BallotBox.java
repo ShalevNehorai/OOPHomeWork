@@ -1,7 +1,6 @@
 package id318449782_id209544642;
 
 import java.io.Serializable;
-import java.util.Arrays;
 import java.util.Vector;
 
 public class BallotBox <T extends Citizen> implements Serializable{

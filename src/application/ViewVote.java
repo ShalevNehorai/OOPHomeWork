@@ -11,6 +11,7 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
 
 public class ViewVote {
 	private MainMenuView mainView;
@@ -56,6 +57,18 @@ public class ViewVote {
 		gbRoot.add(partyLbl, 0, 1);
 		gbRoot.add(partyCombo, 1, 1);
 		gbRoot.add(btnVote, 1, 2);
+		
+		primeryStage.setOnCloseRequest(new EventHandler<WindowEvent>() {
+			@Override
+			public void handle(WindowEvent arg0) {
+				//vote window exited from the X button
+				final String DEAFULT_VOTE = "";
+				mainView.viewVote(DEAFULT_VOTE);
+				primeryStage.close();
+				System.out.println("person " + voterName + " didn't vote");
+			}
+		
+		});
 		
 		
 		Scene scene = new Scene(gbRoot, 400, 150);

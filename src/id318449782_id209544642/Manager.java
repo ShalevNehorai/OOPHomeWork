@@ -21,7 +21,7 @@ public class Manager{
 	
 	private int currentVoter = 0;
 	
-	private final String filePath = "data";
+	private final String FILE_PATH = "data";
 	
 	public Manager() {
 		elections = new Vector<Elections>();
@@ -84,24 +84,6 @@ public class Manager{
 		currentVoter = 0;
 	}
 	
-	/*public void startElection() throws CantVoteException{
-		Set<Citizen> voters =  getCitizens();
-		Citizen currentCitizen = voters.get(currentVoter);
-		if(currentCitizen != null){
-			fireStartElection();
-		}
-			
-		while(voters.get(currentVoter) != null){
-			currentCitizen = voters.get(currentVoter);
-			
-			int voted = fireNextVoter(currentCitizen.toString());
-			
-			currentCitizen.vote(voted);	
-			currentVoter++;
-		}
-		fireFinishElection();
-	}*/
-	
 	public boolean isElectionOccured(){
 		return elections.lastElement().isVoteOccurred();
 	}
@@ -136,7 +118,6 @@ public class Manager{
 			voter.vote(lastVote);
 		}
 		catch(Exception e){
-			//TODO see later
 			e.printStackTrace();
 		}
 		
@@ -241,17 +222,6 @@ public class Manager{
 	public int getNumOfParties() {
 		return elections.lastElement().getNumOfParties();
 	}
-
-	/*public String showAllParties() {
-		StringBuffer str = new StringBuffer();
-		int numOfParties = elections.lastElement().getNumOfParties();
-		for (int i = 0; i < numOfParties; i++) {
-			str.append(i).append(") ").append(elections.lastElement().getParties().get(i).getName()).append("\n");
-		}
-		String output = str.toString();
-		fireShowData(output);
-		return output;
-	}*/
 	
 	public ArrayList<String> getAllParties(){
 		ArrayList<String> list = new ArrayList<String>();
@@ -270,17 +240,6 @@ public class Manager{
 		}
 		return list;
 	}
-	/*public String showAllTypeBallotBoxes(BallotType type) {
-		StringBuffer str = new StringBuffer();
-		int numOfBallotBoxes = elections.lastElement().getNumOfTypeBallotBox(type);
-		for (int i = 0; i < numOfBallotBoxes; i++) {
-			str.append(type.toString()).append("BallotBox - ").append(i).append(") ");
-			str.append(elections.lastElement().getBallotBoxes(type).get(i).toString()).append("\n");
-		}
-		String output = str.toString();
-		fireShowData(output);
-		return output;
-	}*/
 	public ArrayList<String> getBallotBoxes(BallotType type){
 		ArrayList<String> list = new ArrayList<String>();
 		Set<BallotBox<?>> ballots = elections.lastElement().getBallotBoxes(type);
@@ -293,15 +252,6 @@ public class Manager{
 		return elections.lastElement().getBallotBoxes(type);
 		
 	}
-	/*public String showAllBallotBoxes(){
-		StringBuffer str = new StringBuffer();
-		for (BallotType type : BallotType.values()) {
-			str.append(showAllTypeBallotBoxes(type));
-		}
-		String output = str.toString();
-		fireShowData(output);
-		return output;
-	}*/	
 	
 	public ArrayList<String> getAllBallotBoxes(){
 		ArrayList<String> list = new ArrayList<String>();
@@ -312,16 +262,6 @@ public class Manager{
 		}
 		return list;
 	}
-
-	/*public String showAllCitizens() {
-		StringBuffer str = new StringBuffer();
-		for (int i = 0; i < elections.lastElement().getNumOfCitizens(); i++) {
-			str.append(i).append(") ").append(elections.lastElement().getVoters().get(i).toString()).append("\n");
-		}
-		String output = str.toString();
-		fireShowData(output);
-		return output;
-	}*/
 	
 	public ArrayList<String> getAllCitizens(){
 		ArrayList<String> list = new ArrayList<String>();
@@ -493,7 +433,7 @@ public class Manager{
 	public void readBinaryFile() {
 			ObjectInputStream inputFile;
 			try {
-				inputFile = new ObjectInputStream(new FileInputStream(filePath));
+				inputFile = new ObjectInputStream(new FileInputStream(FILE_PATH));
 				elections = (Vector<Elections>)inputFile.readObject();
 				inputFile.close();
 			} catch (IOException | ClassNotFoundException e) {

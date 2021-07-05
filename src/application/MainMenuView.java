@@ -7,27 +7,23 @@ import java.util.InputMismatchException;
 import javax.swing.JOptionPane;
 
 import id318449782_id209544642.AlreadyExistException;
-import id318449782_id209544642.CantVoteException;
 import id318449782_id209544642.BallotBox.BallotType;
-import id318449782_id209544642.Controller;
-import id318449782_id209544642.InvalidIdException;
 import id318449782_id209544642.PoliticalParty.ePoliticalStand;
 import id318449782_id209544642.UIAbstractView;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
-import javafx.print.Collation;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.DatePicker;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
-import javafx.scene.control.TextArea;
-import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
 import listeners.ViewListener;
 
 public class MainMenuView implements UIAbstractView {
@@ -143,8 +139,43 @@ public class MainMenuView implements UIAbstractView {
 		btnCreateNewElections.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent action) {
-				// TODO create new elections
+				Stage createEleStage = new Stage();
+				VBox vbox = new VBox();
+				vbox.setPadding(new Insets(20, 20, 20, 20));
+				vbox.setSpacing(10);
 				
+				Label dateLbl = new Label("Choose the date of the elections");
+				DatePicker datePicker = new DatePicker(LocalDate.now());
+				Text instractionLbl = new Text("creating new elections will end the current elections and you want be able to go back and see the last elections results");
+				instractionLbl.wrappingWidthProperty().bind(vbox.widthProperty());
+				
+				HBox hbox = new HBox();
+				
+				hbox.setSpacing(30);
+				
+				Button btnCreate = new Button("Create new elections");
+				btnCreate.setOnAction(new EventHandler<ActionEvent>() {
+					@Override
+					public void handle(ActionEvent arg0) {
+						LocalDate date = datePicker.getValue();
+						viewAskToCreateElection(date);
+						createEleStage.close();
+					}
+				});
+				
+				Button btnCancel = new Button("Cancel");
+				btnCancel.setOnAction(new EventHandler<ActionEvent>() {
+					@Override
+					public void handle(ActionEvent arg0) {
+						createEleStage.close();
+					}
+				});
+				hbox.getChildren().addAll(btnCancel, btnCreate);
+				
+				vbox.getChildren().addAll(dateLbl, datePicker, instractionLbl, hbox);
+				Scene createScene = new Scene(vbox, 700, 200);
+				createEleStage.setScene(createScene);
+				createEleStage.show();
 			}
 		});
 
@@ -170,6 +201,16 @@ public class MainMenuView implements UIAbstractView {
 		HBox layout = new HBox();
 		layout.getChildren().addAll(gpRoot, addGrid, scroll);
 		scroll.setVisible(true);
+		
+		primaryStage.setOnCloseRequest(new EventHandler<WindowEvent>() {
+			@Override
+			public void handle(WindowEvent arg0) {
+				//vote window exited from the X button
+				exitMenu();
+				primaryStage.close();
+			}
+		
+		});
 
 		Scene scene = new Scene(layout, 700, 500);
 		primaryStage.setScene(scene);
@@ -232,22 +273,6 @@ public class MainMenuView implements UIAbstractView {
 		addGrid.setVisible(false);
 		scroll.setVisible(false);
 	}
-
-	/*private void afterElectionButtons() {
-		btnStartElections.setVisible(false);
-		btnElectionResult.setVisible(true);
-		btnCreateNewElections.setVisible(true);
-
-//		 gpRoot.add(btnElectionResult, 0, 3);
-	}*/
-
-	/*private void beforeElectionButtons() {
-		btnStartElections.setVisible(true);
-		btnElectionResult.setVisible(false);
-		btnCreateNewElections.setVisible(false);
-
-//		 gpRoot.add(btnElectionResult, 0, 3);
-	}*/
 
 	@Override
 	public void registerListener(ViewListener listener) {
@@ -370,7 +395,7 @@ public class MainMenuView implements UIAbstractView {
 			hideSideElements();
 			scroll.setVisible(true);
 		} catch (Exception e) {
-
+			e.printStackTrace();
 		}
 		return null;
 	}
@@ -400,7 +425,7 @@ public class MainMenuView implements UIAbstractView {
 				viewListener.save();
 			}
 		} catch (Exception e) {
-
+			e.printStackTrace();
 		}
 
 	}
@@ -427,6 +452,7 @@ public class MainMenuView implements UIAbstractView {
 	@Override
 	public void electionCreated() {
 		hideSideElements();
+		showMsg("New elections created");
 	}
 
 	@Override

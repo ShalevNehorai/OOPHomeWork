@@ -107,7 +107,6 @@ public class Controller
 
 	@Override
 	public void modelFinishElections() {
-		// TODO Auto-generated method stub
 		theView.endElection();
 	}
 
@@ -118,13 +117,11 @@ public class Controller
 
 	@Override
 	public void newElectionCreated() {
-		// TODO Auto-generated method stub
 		theView.electionCreated();
 	}
 
 	@Override
 	public void modelShowSuccessfully(String data) {
-		// TODO Auto-generated method stub
 		theView.showMsg(data);
 	}
 
@@ -140,7 +137,6 @@ public class Controller
 	
 	@Override
 	public boolean viewAskElectionOccured() {
-		// TODO Auto-generated method stub
 		return theModel.isElectionOccured();
 	}
 

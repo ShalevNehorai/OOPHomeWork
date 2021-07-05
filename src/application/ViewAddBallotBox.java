@@ -1,12 +1,6 @@
 package application;
 
-import java.util.ArrayList;
-import java.util.concurrent.Callable;
-
-import javax.swing.JOptionPane;
-
 import id318449782_id209544642.BallotBox.BallotType;
-import id318449782_id209544642.UIAbstractView;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
@@ -17,7 +11,6 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
-import listeners.ViewListener;
 
 public class ViewAddBallotBox {
 		
